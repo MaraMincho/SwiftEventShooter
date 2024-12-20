@@ -7,4 +7,4 @@
 
 import Foundation
 
-typealias DefaultCompletionNetworkResponseElement = (data: Data?, response: URLResponse?, error: Error?)
+public typealias DefaultCompletionNetworkResponseElement = (data: Data?, response: URLResponse?, error: Error?)

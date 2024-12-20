@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum HTTPMethod: String, Equatable, CaseIterable {
+public enum HTTPMethod: String, Equatable, CaseIterable {
   case get = "GET"
   case post = "POST"
 }

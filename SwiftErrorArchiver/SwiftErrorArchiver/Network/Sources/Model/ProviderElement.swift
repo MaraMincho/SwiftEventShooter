@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - ProviderElement
 
-struct ProviderElement: Sendable {
+public struct ProviderElement: Sendable {
   private var _timeoutInterval: Double = Defaults.duration
   var timeoutInterval: Double { _timeoutInterval }
   var interceptor: Interceptor?
@@ -19,7 +19,7 @@ struct ProviderElement: Sendable {
   }
 }
 
-extension ProviderElement {
+public extension ProviderElement {
   private enum Defaults {
     static let duration: Double = 60
   }

@@ -9,18 +9,23 @@ import Foundation
 
 // MARK: - SDKNetworkProvider
 
-struct SDKNetworkProvider<TargetType: NetworkTargetType>: Sendable {
+public struct SDKNetworkProvider<TargetType: NetworkTargetType>: Sendable {
   let session: URLSessionInterface
   let providerElement: ProviderElement
 
-  init(
+  public init(
     session: URLSessionInterface = URLSession(configuration: .default),
-    providerElement: ProviderElement = .default,
-    responseHandler: @escaping (@Sendable (DefaultCompletionNetworkResponseElement) -> Result<Data, SDKNetworkError>) = defaultResponseHandler
+    providerElement: ProviderElement = .default
   ) {
     self.session = session
     self.providerElement = providerElement
-    self.responseHandler = responseHandler
+  }
+
+  @discardableResult
+  func request(_ type: TargetType) async throws -> Data {
+    let targetTypeRequest = try type.getURLRequest()
+    let (data, response) = try await session.data(for: targetTypeRequest, delegate: nil)
+    return data
   }
 
   @discardableResult
@@ -46,7 +51,7 @@ struct SDKNetworkProvider<TargetType: NetworkTargetType>: Sendable {
       defer { completion(result) }
       do {
         let responseElements = try ProviderElementAdaptor.set(providerElement: providerElement, response: (data, response, error))
-        result = responseHandler(responseElements)
+        result = defaultResponseHandler(responseElements)
       } catch {
         let report = makeErrorReport(error)
         result = .failure(.retryError(report: report))
@@ -55,13 +60,11 @@ struct SDKNetworkProvider<TargetType: NetworkTargetType>: Sendable {
     dataTask.resume()
     return dataTask
   }
-
-  private let responseHandler: @Sendable (DefaultCompletionNetworkResponseElement) -> Result<Data, SDKNetworkError>
 }
 
-private let defaultResponseHandler: @Sendable (
-  _ arguments: DefaultCompletionNetworkResponseElement
-) -> Result<Data, SDKNetworkError> = { arg in
+@Sendable private func defaultResponseHandler(
+  _ arg: DefaultCompletionNetworkResponseElement
+) -> Result<Data, SDKNetworkError> {
   let (data, response, error) = arg
 
   if let networkError = error {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol URLSessionDataTaskInterface {
+public protocol URLSessionDataTaskInterface {
   func cancel()
   func resume()
 }

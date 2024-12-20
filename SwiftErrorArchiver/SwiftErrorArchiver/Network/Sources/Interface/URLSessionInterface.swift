@@ -9,6 +9,7 @@ import Foundation
 
 // MARK: - URLSessionInterface
 
-protocol URLSessionInterface: Sendable {
+public protocol URLSessionInterface: Sendable {
   func dataTask(with request: URLRequest, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionDataTaskInterface
+  func data(for request: URLRequest, delegate: URLSessionTaskDelegate?) async throws -> (Data, URLResponse)
 }

@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - NetworkTargetType
 
-protocol NetworkTargetType {
+public protocol NetworkTargetType {
   var baseURL: String { get }
   var path: String? { get }
   var method: HTTPMethod { get }
