@@ -10,8 +10,8 @@ import Foundation
 // MARK: - URLSession + URLSessionInterface
 
 extension URLSession: URLSessionInterface {
-    func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionDataTaskInterface {
-        let dataTask: URLSessionDataTask = dataTask(with: request, completionHandler: completionHandler)
-        return dataTask
-    }
+  func dataTask(with request: URLRequest, completionHandler: @Sendable @escaping (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionDataTaskInterface {
+    let dataTask: URLSessionDataTask = dataTask(with: request, completionHandler: completionHandler)
+    return dataTask
+  }
 }

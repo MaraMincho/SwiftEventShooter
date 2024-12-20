@@ -10,5 +10,5 @@ import Foundation
 // MARK: - URLSessionInterface
 
 protocol URLSessionInterface: Sendable {
-    func dataTask(with request: URLRequest, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionDataTaskInterface
+  func dataTask(with request: URLRequest, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionDataTaskInterface
 }

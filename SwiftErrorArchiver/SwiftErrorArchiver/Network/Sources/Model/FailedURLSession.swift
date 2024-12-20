@@ -10,11 +10,11 @@ import Foundation
 // MARK: - FailedURLSession
 
 struct FailedURLSession: URLSessionInterface {
-    func dataTask(with _: URLRequest, completionHandler: @escaping (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionDataTaskInterface {
-        let dataTask = URLSessionDataTask()
-        _ = completionHandler(nil, nil, nil)
-        return dataTask
-    }
+  func dataTask(with _: URLRequest, completionHandler: @escaping (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionDataTaskInterface {
+    let dataTask = URLSessionDataTask()
+    _ = completionHandler(nil, nil, nil)
+    return dataTask
+  }
 
-    func resume() {}
+  func resume() {}
 }

@@ -8,6 +8,6 @@
 import Foundation
 
 protocol URLSessionDataTaskInterface {
-    func cancel()
-    func resume()
+  func cancel()
+  func resume()
 }

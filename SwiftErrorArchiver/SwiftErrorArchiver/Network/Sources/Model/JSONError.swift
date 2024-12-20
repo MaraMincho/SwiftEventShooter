@@ -10,6 +10,6 @@ import Foundation
 // MARK: - JSONError
 
 enum JSONError: LocalizedError {
-    case jsonEncodingError
-    case jsonDecodingError
+  case jsonEncodingError
+  case jsonDecodingError
 }

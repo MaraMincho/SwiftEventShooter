@@ -8,7 +8,7 @@
 import Foundation
 
 struct MockSessionDataTask: URLSessionDataTaskInterface {
-    func cancel() {}
+  func cancel() {}
 
-    func resume() {}
+  func resume() {}
 }

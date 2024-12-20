@@ -9,12 +9,15 @@ import Foundation
 
 // MARK: - Interceptor
 
-struct Interceptor {
-    var adapt: (URLRequest) -> URLRequest
-    var retry: (DefaultCompletionNetworkResponseElement) throws -> DefaultCompletionNetworkResponseElement
+struct Interceptor: Sendable {
+  var adapt: @Sendable (URLRequest) -> URLRequest
+  var retry: @Sendable (DefaultCompletionNetworkResponseElement) throws -> DefaultCompletionNetworkResponseElement
 
-    init(adapt: @escaping (URLRequest) -> URLRequest, retry: @escaping (DefaultCompletionNetworkResponseElement) throws -> DefaultCompletionNetworkResponseElement) {
-        self.adapt = adapt
-        self.retry = retry
-    }
+  init(
+    adapt: @escaping @Sendable (URLRequest) -> URLRequest,
+    retry: @escaping @Sendable (DefaultCompletionNetworkResponseElement) throws -> DefaultCompletionNetworkResponseElement
+  ) {
+    self.adapt = adapt
+    self.retry = retry
+  }
 }

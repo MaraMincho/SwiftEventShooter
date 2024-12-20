@@ -11,7 +11,7 @@ public typealias EventInterface = Codable & Equatable & Hashable & Sendable
 
 // MARK: - EventWithDateInterface
 
-public protocol EventWithDateInterface: Equatable & Codable & Hashable & Identifiable & Sendable{
+public protocol EventWithDateInterface: Equatable & Codable & Hashable & Identifiable & Sendable {
   var date: TimeInterval { get }
   var event: Event { get }
   associatedtype Event = EventInterface

@@ -8,6 +8,6 @@
 import Foundation
 
 enum HTTPMethod: String, Equatable, CaseIterable {
-    case get = "GET"
-    case post = "POST"
+  case get = "GET"
+  case post = "POST"
 }
