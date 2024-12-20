@@ -16,5 +16,9 @@ struct FailedURLSession: URLSessionInterface {
     return dataTask
   }
 
+  func data(for _: URLRequest, delegate _: (any URLSessionTaskDelegate)?) async throws -> (Data, URLResponse) {
+    throw NSError()
+  }
+
   func resume() {}
 }

@@ -41,7 +41,6 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
     for data in data.splitByLength(500) {
       _ = try? await provider.request(networkTarget.setBody(data))
     }
-    
   }
 
   public func sendPendingLogs() {}
@@ -76,7 +75,7 @@ private extension Data {
 
     while offset < count {
       let chunkEnd = Swift.min(offset + length, count)
-      let chunk = self[offset..<chunkEnd]
+      let chunk = self[offset ..< chunkEnd]
       result.append(chunk)
       offset = chunkEnd
     }
