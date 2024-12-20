@@ -83,14 +83,3 @@ actor EventCacheDirectoryController: EventStorageControllerInterface, Sendable {
     static let defaultDirectoryURL = "Logs/Error"
   }
 }
-
-// struct EventWithDate<Event: EventInterface>: EventWithDateInterface {
-//  let id: UUID
-//  let event: Event
-//  let date: Double
-//  init(event: Event, id: UUID = .init()) {
-//    self.id = id
-//    self.event = event
-//    self.date = Date.now.timeIntervalSince1970
-//  }
-// }
