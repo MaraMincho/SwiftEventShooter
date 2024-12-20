@@ -32,8 +32,7 @@ actor EventCacheDirectoryController: EventStorageControllerInterface, Sendable {
     let filePath = logsDirectory.appendingPathComponent(fileName)
     do {
       let data = try Data(contentsOf: filePath)
-      let eventWithDate = try JSONDecoder.decode(Event.self, from: data)
-      return eventWithDate
+      return try JSONDecoder.decode(Event.self, from: data)
     } catch {
       print("Failed to load event from \(fileName): \(error)")
       return nil
@@ -41,7 +40,13 @@ actor EventCacheDirectoryController: EventStorageControllerInterface, Sendable {
   }
 
   func getAllEventFileNames() -> [String] {
-    <#code#>
+    do {
+      let files = try FileManager.default.contentsOfDirectory(atPath: logsDirectory.path)
+      return files
+    } catch {
+      print("Failed to get log file names: \(error.localizedDescription)")
+      return []
+    }
   }
 
   let logsDirectory: URL

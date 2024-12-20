@@ -9,7 +9,7 @@ import Foundation
 
 extension JSONDecoder {
   private static let decoder = JSONDecoder()
-  static func decode<DecodeType: Decodable>(_: DecodeType, from data: Data) throws -> DecodeType {
-    return try decoder.decode(DecodeType.self, from: data)
+  static func decode<T>(_: T.Type, from data: Data) throws -> T where T: Decodable {
+    return try decoder.decode(T.self, from: data)
   }
 }
