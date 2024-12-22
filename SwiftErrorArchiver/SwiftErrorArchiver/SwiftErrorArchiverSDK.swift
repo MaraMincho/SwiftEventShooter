@@ -6,8 +6,8 @@
 //
 import Foundation
 
-struct SwiftErrorArchiverSDK: Sendable {
-  nonisolated(unsafe) static var shared: Self = .init()
+public struct SwiftErrorArchiverSDK: Sendable {
+  public nonisolated(unsafe) static var shared: Self = .init()
 
   public init() {}
   public func sendMessage(event _: some Encodable) {}
