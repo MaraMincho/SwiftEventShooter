@@ -15,20 +15,21 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
   private let timeInterval: TimeInterval
   private let provider: SDKNetworkProvider<DiscordNetworkTargetType>
   private let discordNetworkTarget: DiscordNetworkTargetType
-  private let pendingStreamManager: PendingStreamManagerInterface?
+  private let pendingStreamManager: PendingStreamManagerInterface
   public init(
     provider: SDKNetworkProvider<DiscordNetworkTargetType>,
     discordNetworkURL: String,
     nowNetworkingStorageController: EventStorageControllerInterface? = nil,
     networkingFailedStorageController: EventStorageControllerInterface? = nil,
     timeInterval: Double = 5 * 60,
-    pendingStreamManager: PendingStreamManagerInterface
+    pendingStreamManager: PendingStreamManagerInterface?
   ) {
     self.provider = provider
     self.nowNetworkingStorageController = nowNetworkingStorageController
     self.networkingFailedStorageController = networkingFailedStorageController
     self.timeInterval = timeInterval
-    self.discordNetworkTarget = .init(webHookURLString: discordNetworkURL)
+    discordNetworkTarget = .init(webHookURLString: discordNetworkURL)
+    self.pendingStreamManager = pendingStreamManager ?? TCPTahoe()
   }
 
   public func post(_ event: some EventInterface) async {
@@ -38,32 +39,55 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
     }
     let eventWithDate = EventWithDate(data: data)
     await nowNetworkingStorageController?.save(event: eventWithDate)
-    for data in data.splitByLength(Constants.discordTextLength) {
-      do {
-        let (data, response) = try await provider.request(discordNetworkTarget.setBody(data))
-      }catch {
-        SwiftErrorArchiverLogger.error(message: "Network error occurred", dumpObject: error)
-      }
+
+    do {
+      try await sendDiscordLog(data)
+      SwiftErrorArchiverLogger.debug(message: "Network worked correctly")
+    }catch {
+      SwiftErrorArchiverLogger.error(message: "Network error occurred", dumpObject: error)
     }
   }
+
+  private func sendDiscordLog(_ data: Data) async throws{
+    for data in data.splitByLength(Constants.discordTextLength) {
+      let (_, _) = try await provider.request(discordNetworkTarget.setBody(data))
+    }
+  }
+
 
   public func sendPendingLogs() async {
     guard let networkingFailedStorageController else {
       SwiftErrorArchiverLogger.error(message: "NetworkingFailedStorageController is not initiated")
       return
     }
-    for prevEventName in await networkingFailedStorageController.getAllEventFileNames() {
-      if let prevEvent = await networkingFailedStorageController.getEvent(from: prevEventName) {
-        
+    pendingStreamManager.startTransmission()
+    let maxTransmissionCount = pendingStreamManager.getCurrentMaximumTransmissionUnit
+    let currentTransmissionCount = pendingStreamManager.getCurrentMaximumTransmissionUnit
+    await withTaskGroup(of: Void.self) { group in
+      let prevEventNames = await networkingFailedStorageController.getAllEventFileNames().sorted().prefix(currentTransmissionCount)
+      for prevEventName in prevEventNames {
+        group.addTask {
+          do {
+            if let prevEvent = await networkingFailedStorageController.getEvent(from: prevEventName) {
+              try await sendDiscordLog(prevEvent.data)
+            }
+          }catch {
+            pendingStreamManager.failedTransmission()
+          }
+        }
       }
+      await group.waitForAll()
     }
+    pendingStreamManager.finishTransmission()
   }
 
   public func configure() {
     Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true) { _ in
-      Task {
-        await sendPendingLogs()
-      }
+      if pendingStreamManager.isFinishPrevTransmission {
+        Task {
+          await sendPendingLogs()
+        }
+      } 
     }
   }
 

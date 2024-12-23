@@ -12,8 +12,8 @@ public struct EventWithDate: Equatable & Codable & Hashable & Identifiable & Sen
   public let id: UUID
   public let data: Data
   init(data: Data) {
-    self.date = Date.now.timeIntervalSince1970
-    self.id = .init()
+    date = Date.now.timeIntervalSince1970
+    id = .init()
     self.data = data
   }
 }

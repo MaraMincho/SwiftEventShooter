@@ -8,14 +8,37 @@
 import Foundation
 
 actor EventCacheDirectoryController: EventStorageControllerInterface, Sendable {
-  func delete(event: some EventWithDateInterface) {
+  let logsDirectory: URL
+  init?(logsDirectoryURLString: String = Constants.defaultDirectoryURL) {
+    guard let url = URL(string: logsDirectoryURLString) else {
+      return nil
+    }
+    logsDirectory = url
+  }
+
+  func save(event: some EventInterface) {
+    guard let jsonData = try? JSONEncoder.encode(event) else {
+      print("JSON encoding error occurred")
+      return
+    }
+    let event = EventWithDate(data: jsonData)
     let filePath = filePath(for: event)
-    let manager = FileManager.default
+
     do {
-      try manager.removeItem(at: filePath)
-      print("Deleted file \(event.event)")
+      try jsonData.write(to: filePath)
     } catch {
-      print("Failed to delete event: \(error)")
+      print("Failed to save event: \(error)")
+    }
+  }
+
+  func getEvent(from fileName: String) -> EventWithDate? {
+    let filePath = logsDirectory.appendingPathComponent(fileName)
+    do {
+      let data = try Data(contentsOf: filePath)
+      return try JSONDecoder.decode(EventWithDate.self, from: data)
+    } catch {
+      print("Failed to load event from \(fileName): \(error)")
+      return nil
     }
   }
 
@@ -25,17 +48,6 @@ actor EventCacheDirectoryController: EventStorageControllerInterface, Sendable {
       try manager.removeItem(atPath: logsDirectory.appendingPathComponent(fileName).path)
     } catch {
       print("Failed to delete event: \(error)")
-    }
-  }
-
-  func getEvent<Event: EventWithDateInterface>(from fileName: String) -> Event? {
-    let filePath = logsDirectory.appendingPathComponent(fileName)
-    do {
-      let data = try Data(contentsOf: filePath)
-      return try JSONDecoder.decode(Event.self, from: data)
-    } catch {
-      print("Failed to load event from \(fileName): \(error)")
-      return nil
     }
   }
 
@@ -49,30 +61,7 @@ actor EventCacheDirectoryController: EventStorageControllerInterface, Sendable {
     }
   }
 
-  let logsDirectory: URL
-
-  init?(logsDirectoryURLString: String = Constants.defaultDirectoryURL) {
-    guard let url = URL(string: logsDirectoryURLString) else {
-      return nil
-    }
-    logsDirectory = url
-  }
-
-  func save(event: some EventWithDateInterface) {
-    let filePath = filePath(for: event)
-    guard let jsonData = try? JSONEncoder.encode(event) else {
-      print("JSON encoding error occurred")
-      return
-    }
-
-    do {
-      try jsonData.write(to: filePath)
-    } catch {
-      print("Failed to save event: \(error)")
-    }
-  }
-
-  private func filePath(for event: some EventWithDateInterface) -> URL {
+  private func filePath(for event: EventWithDate) -> URL {
     let dateWithIntDescription = Int(event.date).description
     let uniqueIdentifier = UUID().description
     let fileName = [dateWithIntDescription, uniqueIdentifier].joined(separator: "_")
