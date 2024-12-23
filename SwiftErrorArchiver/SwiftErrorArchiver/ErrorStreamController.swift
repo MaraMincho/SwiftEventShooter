@@ -43,17 +43,16 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
     do {
       try await sendDiscordLog(data)
       SwiftErrorArchiverLogger.debug(message: "Network worked correctly")
-    }catch {
+    } catch {
       SwiftErrorArchiverLogger.error(message: "Network error occurred", dumpObject: error)
     }
   }
 
-  private func sendDiscordLog(_ data: Data) async throws{
+  private func sendDiscordLog(_ data: Data) async throws {
     for data in data.splitByLength(Constants.discordTextLength) {
-      let (_, _) = try await provider.request(discordNetworkTarget.setBody(data))
+      let _ = try await provider.request(discordNetworkTarget.setBody(data))
     }
   }
-
 
   public func sendPendingLogs() async {
     guard let networkingFailedStorageController else {
@@ -61,7 +60,6 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
       return
     }
     pendingStreamManager.startTransmission()
-    let maxTransmissionCount = pendingStreamManager.getCurrentMaximumTransmissionUnit
     let currentTransmissionCount = pendingStreamManager.getCurrentMaximumTransmissionUnit
     await withTaskGroup(of: Void.self) { group in
       let prevEventNames = await networkingFailedStorageController.getAllEventFileNames().sorted().prefix(currentTransmissionCount)
@@ -71,7 +69,8 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
             if let prevEvent = await networkingFailedStorageController.getEvent(from: prevEventName) {
               try await sendDiscordLog(prevEvent.data)
             }
-          }catch {
+            await networkingFailedStorageController.delete(fileName: prevEventName)
+          } catch {
             pendingStreamManager.failedTransmission()
           }
         }
@@ -87,7 +86,7 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
         Task {
           await sendPendingLogs()
         }
-      } 
+      }
     }
   }
 

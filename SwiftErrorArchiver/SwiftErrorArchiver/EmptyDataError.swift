@@ -1,5 +1,5 @@
 //
-//  NetworkError.swift
+//  EmptyDataError.swift
 //  SwiftErrorArchiver
 //
 //  Created by MaraMincho on 12/23/24.
