@@ -19,10 +19,22 @@ struct ContentView: View {
       Text("Hello, world!")
 
       Button {
-        sdk.sendMessage(event: "SomeEvent")
+        sdk.sendMessage(event: "안녕하세요")
       } label: {
         Text("fatal error occurred")
       }
+
+      Button {
+        for ind in 1...100 {
+          sdk.sendMessage(event: TestEventObject(message: "\(ind)Message입니다."))
+        }
+        fatalError()
+      } label: {
+        Text("fatal error occurred")
+      }
+    }
+    .task {
+      sdk.configure()
     }
     .padding()
   }
