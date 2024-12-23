@@ -1,5 +1,5 @@
 //
-//  ErrorStreamController.swift
+//  DiscordErrorStreamController.swift
 //  SwiftErrorArchiver
 //
 //  Created by MaraMincho on 12/20/24.
@@ -33,6 +33,10 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
   }
 
   public func post(_ event: some EventInterface) async {
+    guard NetworkMonitor.isNetworkAvailable else {
+      SwiftErrorArchiverLogger.debug(message: "Network is not available")
+      return
+    }
     guard let data = try? JSONEncoder.encode(event) else {
       SwiftErrorArchiverLogger.error(message: "Json decoding error occurred", dumpObject: event)
       return
@@ -54,10 +58,10 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
     }
   }
 
-  private func failedNetworkingRoutine(event: some EventInterface)async {
+  private func failedNetworkingRoutine(event: some EventInterface) async {
     do {
       try await networkingFailedStorageController?.save(event: event)
-    }catch {
+    } catch {
       SwiftErrorArchiverLogger.error(message: "Failed to save failed networking event to storage", dumpObject: event)
     }
   }
@@ -75,8 +79,8 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
             let event = await nowNetworkingStorageController.getEvent(from: fileName)
             try await networkingFailedStorageController.save(event: event)
             await nowNetworkingStorageController.delete(fileName: fileName)
-            return .success(Void())
-          }catch {
+            return .success(())
+          } catch {
             // 로그 저장에 실패해도 일단 지우기
             await nowNetworkingStorageController.delete(fileName: fileName)
             return .failure(error)
@@ -86,23 +90,29 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
 
       for await result in group {
         switch result {
-        case let .failure(error) :
+        case let .failure(error):
           SwiftErrorArchiverLogger.error(message: "Unable to save failedNetworking event to storage", dumpObject: error)
         case .success:
           break
         }
       }
     }
-
   }
 
-  public func sendPendingLogs() async {
+  public func sendPendingEvents() async {
+    guard NetworkMonitor.isNetworkAvailable else {
+      SwiftErrorArchiverLogger.debug(message: "Network is not available")
+      return
+    }
+
     guard let networkingFailedStorageController else {
       SwiftErrorArchiverLogger.error(message: "NetworkingFailedStorageController is not initiated")
       return
     }
+
     pendingStreamManager.startTransmission()
     let currentTransmissionCount = pendingStreamManager.getCurrentMaximumTransmissionUnit
+
     await withTaskGroup(of: Void.self) { group in
       let prevEventNames = await networkingFailedStorageController.getAllEventFileNames().sorted().prefix(currentTransmissionCount)
       for prevEventName in prevEventNames {
@@ -117,17 +127,23 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
           }
         }
       }
-      await group.waitForAll()
     }
     pendingStreamManager.finishTransmission()
   }
 
   public func configure() {
-    Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true) { _ in
+    Task {
+      await initialSendPendingLogRoutine()
+      Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true) { _ in
+        timerAction()
+      }
+    }
+  }
+
+  private func timerAction() {
+    Task {
       if pendingStreamManager.isFinishPrevTransmission {
-        Task {
-          await sendPendingLogs()
-        }
+        await sendPendingEvents()
       }
     }
   }
