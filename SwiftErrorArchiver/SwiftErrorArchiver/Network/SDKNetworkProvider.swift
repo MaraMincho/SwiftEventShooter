@@ -22,10 +22,10 @@ public struct SDKNetworkProvider<TargetType: NetworkTargetType>: Sendable {
   }
 
   @discardableResult
-  func request(_ type: TargetType) async throws -> Data {
+  func request(_ type: TargetType) async throws -> (Data, URLResponse) {
     let targetTypeRequest = try type.getURLRequest()
     let (data, response) = try await session.data(for: targetTypeRequest, delegate: nil)
-    return data
+    return (data, response)
   }
 
   @discardableResult

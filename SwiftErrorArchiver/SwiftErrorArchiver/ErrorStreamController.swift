@@ -14,39 +14,58 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
   private let networkingFailedStorageController: EventStorageControllerInterface?
   private let timeInterval: TimeInterval
   private let provider: SDKNetworkProvider<DiscordNetworkTargetType>
-  private let discordNetworkURL: String
+  private let discordNetworkTarget: DiscordNetworkTargetType
+  private let pendingStreamManager: PendingStreamManagerInterface?
   public init(
     provider: SDKNetworkProvider<DiscordNetworkTargetType>,
     discordNetworkURL: String,
     nowNetworkingStorageController: EventStorageControllerInterface? = nil,
     networkingFailedStorageController: EventStorageControllerInterface? = nil,
-    timeInterval: Double = 5 * 60
+    timeInterval: Double = 5 * 60,
+    pendingStreamManager: PendingStreamManagerInterface
   ) {
     self.provider = provider
     self.nowNetworkingStorageController = nowNetworkingStorageController
     self.networkingFailedStorageController = networkingFailedStorageController
     self.timeInterval = timeInterval
-    self.discordNetworkURL = discordNetworkURL
+    self.discordNetworkTarget = .init(webHookURLString: discordNetworkURL)
   }
 
   public func post(_ event: some EventInterface) async {
-    let eventWithDate = EventWithDate(event: event)
-    await nowNetworkingStorageController?.save(event: eventWithDate)
     guard let data = try? JSONEncoder.encode(event) else {
       SwiftErrorArchiverLogger.error(message: "Json decoding error occurred", dumpObject: event)
       return
     }
-    let networkTarget = DiscordNetworkTargetType(webHookURLString: discordNetworkURL)
+    let eventWithDate = EventWithDate(data: data)
+    await nowNetworkingStorageController?.save(event: eventWithDate)
     for data in data.splitByLength(Constants.discordTextLength) {
-      _ = try? await provider.request(networkTarget.setBody(data))
+      do {
+        let (data, response) = try await provider.request(discordNetworkTarget.setBody(data))
+      }catch {
+        SwiftErrorArchiverLogger.error(message: "Network error occurred", dumpObject: error)
+      }
     }
   }
 
-  public func sendPendingLogs() {
-    
+  public func sendPendingLogs() async {
+    guard let networkingFailedStorageController else {
+      SwiftErrorArchiverLogger.error(message: "NetworkingFailedStorageController is not initiated")
+      return
+    }
+    for prevEventName in await networkingFailedStorageController.getAllEventFileNames() {
+      if let prevEvent = await networkingFailedStorageController.getEvent(from: prevEventName) {
+        
+      }
+    }
   }
 
-  public func configure() {}
+  public func configure() {
+    Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true) { _ in
+      Task {
+        await sendPendingLogs()
+      }
+    }
+  }
 
   enum Constants {
     static let discordTextLength: Int = 2000

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct DiscordNetworkTargetType: NetworkTargetType {
+public struct DiscordNetworkTargetType: NetworkTargetType, @unchecked Sendable {
   public let baseURL: String
   public let path: String?
   public let method: HTTPMethod
