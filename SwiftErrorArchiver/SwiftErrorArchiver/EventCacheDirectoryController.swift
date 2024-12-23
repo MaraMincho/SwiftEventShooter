@@ -16,19 +16,12 @@ actor EventCacheDirectoryController: EventStorageControllerInterface, Sendable {
     logsDirectory = url
   }
 
-  func save(event: some EventInterface) {
-    guard let jsonData = try? JSONEncoder.encode(event) else {
-      print("JSON encoding error occurred")
-      return
-    }
+  func save(event: some EventInterface) throws -> String {
+    let jsonData = try JSONEncoder.encode(event)
     let event = EventWithDate(data: jsonData)
-    let filePath = filePath(for: event)
-
-    do {
-      try jsonData.write(to: filePath)
-    } catch {
-      print("Failed to save event: \(error)")
-    }
+    let (filePath, fileName) = filePath(for: event)
+    try jsonData.write(to: filePath)
+    return fileName
   }
 
   func getEvent(from fileName: String) -> EventWithDate? {
@@ -61,11 +54,11 @@ actor EventCacheDirectoryController: EventStorageControllerInterface, Sendable {
     }
   }
 
-  private func filePath(for event: EventWithDate) -> URL {
+  private func filePath(for event: EventWithDate) -> (url: URL, fileName: String) {
     let dateWithIntDescription = Int(event.date).description
     let uniqueIdentifier = UUID().description
     let fileName = [dateWithIntDescription, uniqueIdentifier].joined(separator: "_")
-    return logsDirectory.appendingPathComponent("\(fileName).json")
+    return (logsDirectory.appendingPathComponent("\(fileName).json"), fileName)
   }
 
   private enum Constants {

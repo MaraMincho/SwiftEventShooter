@@ -37,21 +37,63 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
       SwiftErrorArchiverLogger.error(message: "Json decoding error occurred", dumpObject: event)
       return
     }
-    let eventWithDate = EventWithDate(data: data)
-    await nowNetworkingStorageController?.save(event: eventWithDate)
+    var fileName: String? = nil
 
     do {
+      fileName = try await nowNetworkingStorageController?.save(event: event)
       try await sendDiscordLog(data)
       SwiftErrorArchiverLogger.debug(message: "Network worked correctly")
     } catch {
+      await failedNetworkingRoutine(event: event)
       SwiftErrorArchiverLogger.error(message: "Network error occurred", dumpObject: error)
+    }
+
+    // 만약 fileName이 있다면
+    if let fileName {
+      await nowNetworkingStorageController?.delete(fileName: fileName)
     }
   }
 
-  private func sendDiscordLog(_ data: Data) async throws {
-    for data in data.splitByLength(Constants.discordTextLength) {
-      let _ = try await provider.request(discordNetworkTarget.setBody(data))
+  private func failedNetworkingRoutine(event: some EventInterface)async {
+    do {
+      try await networkingFailedStorageController?.save(event: event)
+    }catch {
+      SwiftErrorArchiverLogger.error(message: "Failed to save failed networking event to storage", dumpObject: event)
     }
+  }
+
+  public func initialSendPendingLogRoutine() async {
+    guard let nowNetworkingStorageController,
+          let networkingFailedStorageController
+    else {
+      return
+    }
+    await withTaskGroup(of: Result<Void, Error>.self) { group in
+      for fileName in await nowNetworkingStorageController.getAllEventFileNames() {
+        group.addTask {
+          do {
+            let event = await nowNetworkingStorageController.getEvent(from: fileName)
+            try await networkingFailedStorageController.save(event: event)
+            await nowNetworkingStorageController.delete(fileName: fileName)
+            return .success(Void())
+          }catch {
+            // 로그 저장에 실패해도 일단 지우기
+            await nowNetworkingStorageController.delete(fileName: fileName)
+            return .failure(error)
+          }
+        }
+      }
+
+      for await result in group {
+        switch result {
+        case let .failure(error) :
+          SwiftErrorArchiverLogger.error(message: "Unable to save failedNetworking event to storage", dumpObject: error)
+        case .success:
+          break
+        }
+      }
+    }
+
   }
 
   public func sendPendingLogs() async {
@@ -90,8 +132,14 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
     }
   }
 
+  private func sendDiscordLog(_ data: Data) async throws {
+    for data in data.splitByLength(Constants.discordTextLength) {
+      let _ = try await provider.request(discordNetworkTarget.setBody(data))
+    }
+  }
+
   enum Constants {
-    static let discordTextLength: Int = 2000
+    static let discordTextLength: Int = 1900
   }
 }
 
