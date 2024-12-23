@@ -2,7 +2,7 @@
 
 import Foundation
 
-final class TCPTahoe: PendingStreamManagerInterface, @unchecked Sendable {
+public final class TCPTahoe: PendingStreamManagerInterface, @unchecked Sendable {
   private var ssthresh: Int
   private var currentMaximumTransmissionUnit: Int
   private let increaseUnit: Int
@@ -10,13 +10,13 @@ final class TCPTahoe: PendingStreamManagerInterface, @unchecked Sendable {
   private var failedTransmissionCount: Int = 0
   private var isFinished: Bool = true
 
-  var isFinishPrevTransmission: Bool {
+  public var isFinishPrevTransmission: Bool {
     queue.sync {
       isFinished
     }
   }
 
-  var getCurrentMaximumTransmissionUnit: Int {
+  public var getCurrentMaximumTransmissionUnit: Int {
     queue.sync {
       currentMaximumTransmissionUnit
     }
@@ -31,7 +31,7 @@ final class TCPTahoe: PendingStreamManagerInterface, @unchecked Sendable {
     currentMaximumTransmissionUnit = Constants.defaultCurrentMaximumTransmissionUnit
   }
 
-  init() {
+  public init() {
     ssthresh = Constants.defaultInitialSsthresh
     currentMaximumTransmissionUnit = Constants.defaultCurrentMaximumTransmissionUnit
     increaseUnit = Constants.defaultIncreaseUnit
@@ -52,21 +52,21 @@ final class TCPTahoe: PendingStreamManagerInterface, @unchecked Sendable {
     currentMaximumTransmissionUnit = 1
   }
 
-  func failedTransmission() {
+  public func failedTransmission() {
     queue.sync { [weak self] in
       guard let self else { return }
       failedTransmissionCount += 1
     }
   }
 
-  func successTransmission() {
+  public func successTransmission() {
     queue.sync { [weak self] in
       guard let self else { return }
       increaseSsthresh()
     }
   }
 
-  func finishTransmission() {
+  public func finishTransmission() {
     queue.sync { [weak self] in
       guard let self else { return }
       isFinished = true
@@ -78,7 +78,7 @@ final class TCPTahoe: PendingStreamManagerInterface, @unchecked Sendable {
     }
   }
 
-  func startTransmission() {
+  public func startTransmission() {
     queue.sync { [weak self] in
       guard let self else { return }
       failedTransmissionCount = 0

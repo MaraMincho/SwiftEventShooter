@@ -16,37 +16,41 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
   private let provider: SDKNetworkProvider<DiscordNetworkTargetType>
   private let discordNetworkTarget: DiscordNetworkTargetType
   private let pendingStreamManager: PendingStreamManagerInterface
+  private let networkMonitor: NetworkMonitorInterface
   public init(
-    provider: SDKNetworkProvider<DiscordNetworkTargetType>,
+    provider: SDKNetworkProvider<DiscordNetworkTargetType> = .init(),
     discordNetworkURL: String,
     nowNetworkingStorageController: EventStorageControllerInterface? = nil,
     networkingFailedStorageController: EventStorageControllerInterface? = nil,
     timeInterval: Double = 5 * 60,
-    pendingStreamManager: PendingStreamManagerInterface?
+    pendingStreamManager: PendingStreamManagerInterface = TCPTahoe(),
+    networkMonitor: NetworkMonitorInterface = NetworkMonitor()
   ) {
     self.provider = provider
     self.nowNetworkingStorageController = nowNetworkingStorageController
     self.networkingFailedStorageController = networkingFailedStorageController
     self.timeInterval = timeInterval
     discordNetworkTarget = .init(webHookURLString: discordNetworkURL)
-    self.pendingStreamManager = pendingStreamManager ?? TCPTahoe()
+    self.pendingStreamManager = pendingStreamManager
+    self.networkMonitor = networkMonitor
   }
 
   public func post(_ event: some EventInterface) async {
-    guard NetworkMonitor.isNetworkAvailable else {
+    guard networkMonitor.isNetworkAvailable else {
       SwiftErrorArchiverLogger.debug(message: "Network is not available")
       return
     }
-    guard let data = try? JSONEncoder.encode(event) else {
+    guard let data = try? JSONEncoder.encode(event),
+            let currentString = String(data: data, encoding: .utf8)
+    else {
       SwiftErrorArchiverLogger.error(message: "Json decoding error occurred", dumpObject: event)
       return
     }
     var fileName: String? = nil
-
     do {
       fileName = try await nowNetworkingStorageController?.save(event: event)
-      try await sendDiscordLog(data)
-      SwiftErrorArchiverLogger.debug(message: "Network worked correctly")
+      let responseData = try await sendDiscordLog(currentString)
+      SwiftErrorArchiverLogger.debug(message: "Network worked correctly", dumpObject: responseData)
     } catch {
       await failedNetworkingRoutine(event: event)
       SwiftErrorArchiverLogger.error(message: "Network error occurred", dumpObject: error)
@@ -100,7 +104,7 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
   }
 
   public func sendPendingEvents() async {
-    guard NetworkMonitor.isNetworkAvailable else {
+    guard networkMonitor.isNetworkAvailable else {
       SwiftErrorArchiverLogger.debug(message: "Network is not available")
       return
     }
@@ -118,8 +122,10 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
       for prevEventName in prevEventNames {
         group.addTask {
           do {
-            if let prevEvent = await networkingFailedStorageController.getEvent(from: prevEventName) {
-              try await sendDiscordLog(prevEvent.data)
+            if
+              let prevEvent = await networkingFailedStorageController.getEvent(from: prevEventName),
+              let currentMessage = String(data: prevEvent.data, encoding: .utf8) {
+              try await sendDiscordLog(currentMessage)
             }
             await networkingFailedStorageController.delete(fileName: prevEventName)
           } catch {
@@ -148,14 +154,22 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
     }
   }
 
-  private func sendDiscordLog(_ data: Data) async throws {
-    for data in data.splitByLength(Constants.discordTextLength) {
-      let _ = try await provider.request(discordNetworkTarget.setBody(data))
+  private func sendDiscordLog(_ content: String) async throws {
+    for currentContent in content.splitByLength(Constants.discordTextLength) {
+      let payload: [String: Any] = ["content": currentContent]
+      _ = try await provider.request(discordNetworkTarget.setBody(DiscordMessage(content: currentContent)))
     }
   }
 
   enum Constants {
     static let discordTextLength: Int = 1900
+  }
+
+  struct DiscordMessage<Item: Encodable>: Encodable {
+    let content: Item
+    init(content: Item) {
+      self.content = content
+    }
   }
 }
 

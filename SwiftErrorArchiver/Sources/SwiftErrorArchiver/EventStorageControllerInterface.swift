@@ -7,11 +7,11 @@
 
 import Foundation
 
-public typealias EventInterface = Codable & Equatable & Hashable & Sendable
+public typealias EventInterface = Codable & Equatable & Sendable
 
 // MARK: - EventWithDateInterface
 
-public protocol EventWithDateInterface: Equatable & Codable & Hashable & Identifiable & Sendable {
+public protocol EventWithDateInterface: Equatable & Codable & Identifiable & Sendable {
   var date: TimeInterval { get }
   var event: Event { get }
   associatedtype Event = EventInterface

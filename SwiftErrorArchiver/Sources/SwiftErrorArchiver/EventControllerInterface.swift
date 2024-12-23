@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol EventControllerInterface {
+public protocol EventControllerInterface: Sendable {
   func post(_ event: some EventInterface) async
   func sendPendingEvents() async
   func configure()

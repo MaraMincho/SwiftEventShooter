@@ -28,11 +28,11 @@ public struct DiscordNetworkTargetType: NetworkTargetType, @unchecked Sendable {
     method = .post
     body = nil
     headers = [
-      "application/json": "Content-Type",
+      "Content-Type": "application/json",
     ]
   }
 
-  func setBody(_ body: Data) -> Self {
+  func setBody(_ body: any Encodable) -> Self {
     return .init(baseURL: baseURL, path: path, method: method, body: body, headers: headers)
   }
 }
