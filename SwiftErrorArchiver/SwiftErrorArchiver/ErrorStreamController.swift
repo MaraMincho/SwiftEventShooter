@@ -32,18 +32,19 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
   public func post(_ event: some EventInterface) async {
     let eventWithDate = EventWithDate(event: event)
     await nowNetworkingStorageController?.save(event: eventWithDate)
-    guard let data = try? JSONEncoder.encode(event),
-          let networkTarget = DiscordNetworkTargetType(webHookURLString: discordNetworkURL)
-    else {
-      print("섬딩")
+    guard let data = try? JSONEncoder.encode(event) else {
+      SwiftErrorArchiverLogger.error(message: "Json decoding error occurred", dumpObject: event)
       return
     }
-    for data in data.splitByLength(500) {
+    let networkTarget = DiscordNetworkTargetType(webHookURLString: discordNetworkURL)
+    for data in data.splitByLength(Constants.discordTextLength) {
       _ = try? await provider.request(networkTarget.setBody(data))
     }
   }
 
-  public func sendPendingLogs() {}
+  public func sendPendingLogs() {
+    
+  }
 
   public func configure() {}
 

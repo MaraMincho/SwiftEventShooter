@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol EventControllerInterface {
-  func post<Event: EventInterface>(_ event: Event) async
+  func post(_ event: some EventInterface) async
   func sendPendingLogs() async
   func configure()
 }

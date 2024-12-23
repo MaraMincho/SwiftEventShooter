@@ -20,8 +20,8 @@ public protocol EventWithDateInterface: Equatable & Codable & Hashable & Identif
 // MARK: - EventStorageControllerInterface
 
 public protocol EventStorageControllerInterface: Sendable, Actor {
-  func save<Event: EventWithDateInterface>(event: Event)
-  func delete<Event: EventWithDateInterface>(event: Event)
+  func save(event: some EventWithDateInterface)
+  func delete(event: some EventWithDateInterface)
   func delete(fileName: String)
   func getEvent<Event: EventWithDateInterface>(from fileName: String) -> Event?
   func getAllEventFileNames() -> [String]

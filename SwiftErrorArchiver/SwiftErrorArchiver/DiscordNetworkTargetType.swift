@@ -22,7 +22,7 @@ public struct DiscordNetworkTargetType: NetworkTargetType {
     self.headers = headers
   }
 
-  init?(webHookURLString: String) {
+  init(webHookURLString: String) {
     baseURL = webHookURLString
     path = nil
     method = .post
