@@ -1,5 +1,5 @@
 //
-//  Logger.swift
+//  SwiftErrorArchiverLogger.swift
 //  SwiftErrorArchiver
 //
 //  Created by MaraMincho on 12/23/24.

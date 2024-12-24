@@ -41,7 +41,7 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
       return
     }
     guard let data = try? JSONEncoder.encode(event),
-            let currentString = String(data: data, encoding: .utf8)
+          let currentString = String(data: data, encoding: .utf8)
     else {
       SwiftErrorArchiverLogger.error(message: "Json decoding error occurred", dumpObject: event)
       return

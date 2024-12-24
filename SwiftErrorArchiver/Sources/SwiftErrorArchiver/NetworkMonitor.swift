@@ -8,9 +8,13 @@
 import Foundation
 import Network
 
+// MARK: - NetworkMonitorInterface
+
 public protocol NetworkMonitorInterface: Sendable {
   var isNetworkAvailable: Bool { get }
 }
+
+// MARK: - NetworkMonitor
 
 public final class NetworkMonitor: NetworkMonitorInterface, @unchecked Sendable {
   private let monitor = NWPathMonitor()
@@ -18,7 +22,7 @@ public final class NetworkMonitor: NetworkMonitorInterface, @unchecked Sendable 
   private var _networkStatus: Bool = false
   private let syncQueue = DispatchQueue(label: "NetworkMonitor.Sync", attributes: .concurrent)
 
-  // 네트워크 상태 접근
+  /// 네트워크 상태 접근
   var networkStatus: Bool {
     get {
       syncQueue.sync { _networkStatus }
@@ -30,11 +34,11 @@ public final class NetworkMonitor: NetworkMonitorInterface, @unchecked Sendable 
     }
   }
 
-  public init() {   
+  public init() {
     monitor.start(queue: queue)
     monitor.pathUpdateHandler = { [weak self] path in
-      guard let self = self else { return }
-      self.networkStatus = (path.status == .satisfied)
+      guard let self else { return }
+      networkStatus = (path.status == .satisfied)
     }
 
     // 초기 상태 설정
@@ -43,7 +47,7 @@ public final class NetworkMonitor: NetworkMonitorInterface, @unchecked Sendable 
     }
   }
 
-  // 네트워크 상태를 외부에서 확인
+  /// 네트워크 상태를 외부에서 확인
   public var isNetworkAvailable: Bool {
     networkStatus
   }

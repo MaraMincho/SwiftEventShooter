@@ -4,23 +4,23 @@
 import PackageDescription
 
 let package = Package(
-    name: "SwiftErrorArchiver",
-    platforms: [.iOS(.v15), .macOS(.v13), .visionOS(.v1), .tvOS(.v13)],
-    products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(
-            name: "SwiftErrorArchiver",
-            targets: ["SwiftErrorArchiver"]
-        ),
-    ],
-    targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
-        .target(
-            name: "SwiftErrorArchiver"),
-        .testTarget(
-            name: "SwiftErrorArchiverTests",
-            dependencies: ["SwiftErrorArchiver"]
-        ),
-    ]
+  name: "SwiftErrorArchiver",
+  platforms: [.iOS(.v15), .macOS(.v13), .visionOS(.v1), .tvOS(.v13)],
+  products: [
+    // Products define the executables and libraries a package produces, making them visible to other packages.
+    .library(
+      name: "SwiftErrorArchiver",
+      targets: ["SwiftErrorArchiver"]
+    ),
+  ],
+  targets: [
+    // Targets are the basic building blocks of a package, defining a module or a test suite.
+    // Targets can depend on other targets in this package and products from dependencies.
+    .target(
+      name: "SwiftErrorArchiver"),
+    .testTarget(
+      name: "SwiftErrorArchiverTests",
+      dependencies: ["SwiftErrorArchiver"]
+    ),
+  ]
 )

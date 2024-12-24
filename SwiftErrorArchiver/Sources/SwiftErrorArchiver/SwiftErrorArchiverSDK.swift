@@ -6,6 +6,8 @@
 //
 import Foundation
 
+// MARK: - SwiftErrorArchiverSDK
+
 public struct SwiftErrorArchiverSDK: Sendable {
   let eventController: any EventControllerInterface
   public init(type: SwiftErrorArchiverSDKInitialType) {
@@ -14,6 +16,7 @@ public struct SwiftErrorArchiverSDK: Sendable {
       controller
     }
   }
+
   public func sendMessage(event: some EventInterface) {
     Task {
       await eventController.post(event)
@@ -25,10 +28,12 @@ public struct SwiftErrorArchiverSDK: Sendable {
   }
 }
 
+// MARK: - SwiftErrorArchiverSDKInitialType
+
 public enum SwiftErrorArchiverSDKInitialType {
   case discord(DiscordErrorStreamController)
 }
 
-final class SwiftErrorArchiverFactory {
+// MARK: - SwiftErrorArchiverFactory
 
-}
+final class SwiftErrorArchiverFactory {}
