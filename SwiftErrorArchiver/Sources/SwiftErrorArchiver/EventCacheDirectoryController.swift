@@ -42,7 +42,8 @@ public actor EventCacheDirectoryController: EventStorageControllerInterface, Sen
     let jsonData = try JSONEncoder.encode(event)
     let event = EventWithDate(data: jsonData)
     let (filePath, fileName) = filePath(for: event)
-    try jsonData.write(to: filePath)
+    let eventJsonData = try JSONEncoder.encode(event)
+    try eventJsonData.write(to: filePath)
     return fileName
   }
 
@@ -52,7 +53,7 @@ public actor EventCacheDirectoryController: EventStorageControllerInterface, Sen
       let data = try Data(contentsOf: filePath)
       return try JSONDecoder.decode(EventWithDate.self, from: data)
     } catch {
-      print("Failed to load event from \(fileName): \(error)")
+      print("Failed to load event from \(filePath): \(error)")
       return nil
     }
   }
