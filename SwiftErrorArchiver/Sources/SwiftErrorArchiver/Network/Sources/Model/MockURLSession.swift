@@ -7,8 +7,17 @@
 
 import Foundation
 
-public struct MockURLSession: URLSessionInterface {
-  public func data(for _: URLRequest, delegate _: (any URLSessionTaskDelegate)?) async throws -> (Data, URLResponse) {
+public struct MockURLSession: @unchecked Sendable, URLSessionInterface {
+  var userCompletion: ((_ for: URLRequest, _ delegate: (any URLSessionTaskDelegate)?) async throws -> (Data, URLResponse))?
+  public init(
+    completion: ((_ request: URLRequest, _ delegate: (any URLSessionTaskDelegate)?) async throws -> (Data, URLResponse))? = nil
+  ) {
+    self.userCompletion = completion
+  }
+  public func data(for request: URLRequest, delegate: (any URLSessionTaskDelegate)?) async throws -> (Data, URLResponse) {
+    if let userCompletion {
+      return try await userCompletion(request, delegate)
+    }
     return (Data(), .init())
   }
 

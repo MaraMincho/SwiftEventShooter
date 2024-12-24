@@ -9,7 +9,7 @@ import Foundation
 // MARK: - SwiftErrorArchiverSDK
 
 public struct SwiftErrorArchiverSDK: Sendable {
-  let eventController: any EventControllerInterface
+  let eventController: EventControllerInterface
   public init(type: SwiftErrorArchiverSDKInitialType) {
     eventController = switch type {
     case let .discord(controller):

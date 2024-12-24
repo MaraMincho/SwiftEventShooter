@@ -20,9 +20,9 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
   public init(
     provider: SDKNetworkProvider<DiscordNetworkTargetType> = .init(),
     discordNetworkURL: String,
-    nowNetworkingStorageController: EventStorageControllerInterface? = nil,
-    networkingFailedStorageController: EventStorageControllerInterface? = nil,
-    timeInterval: Double = 5 * 60,
+    nowNetworkingStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .nowNetworking),
+    networkingFailedStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .failedNetworking),
+    timeInterval: Double = 5,
     pendingStreamManager: PendingStreamManagerInterface = TCPTahoe(),
     networkMonitor: NetworkMonitorInterface = NetworkMonitor()
   ) {
@@ -140,9 +140,9 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
   public func configure() {
     Task {
       await initialSendPendingLogRoutine()
-      Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true) { _ in
-        timerAction()
-      }
+    }
+    Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true) { _ in
+      timerAction()
     }
   }
 
