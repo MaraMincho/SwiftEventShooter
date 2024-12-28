@@ -12,11 +12,11 @@ import Foundation
 public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
   private let nowNetworkingStorageController: EventStorageControllerInterface?
   private let networkingFailedStorageController: EventStorageControllerInterface?
-  private let timeInterval: TimeInterval
   private let provider: SDKNetworkProvider<DiscordNetworkTargetType>
   private let discordNetworkTarget: DiscordNetworkTargetType
   private let pendingStreamManager: PendingStreamManagerInterface
   private let networkMonitor: NetworkMonitorInterface
+  private let timer: TimerManager
   public init(
     provider: SDKNetworkProvider<DiscordNetworkTargetType> = .init(),
     discordNetworkURL: String,
@@ -29,10 +29,10 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
     self.provider = provider
     self.nowNetworkingStorageController = nowNetworkingStorageController
     self.networkingFailedStorageController = networkingFailedStorageController
-    self.timeInterval = timeInterval
     discordNetworkTarget = .init(webHookURLString: discordNetworkURL)
     self.pendingStreamManager = pendingStreamManager
     self.networkMonitor = networkMonitor
+    timer = .init(interval: timeInterval)
   }
 
   public func post(_ event: some EventInterface) async {
@@ -141,7 +141,7 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
     Task {
       await initialSendPendingLogRoutine()
     }
-    Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true) { _ in
+    timer.startTimer {
       timerAction()
     }
   }

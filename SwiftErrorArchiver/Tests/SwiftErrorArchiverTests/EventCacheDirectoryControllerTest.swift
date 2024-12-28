@@ -32,7 +32,7 @@ final class EventCacheDirectoryControllerTest: XCTestCase {
 
   func test_ActFile() async throws {
     let testEventMessage = "I am test event message"
-    let willSaveEvent = TestEvent(message: "testEventMessage")
+    let willSaveEvent = TestEvent(message: testEventMessage)
     _ = try await controller.save(event: willSaveEvent)
     let eventFileNames = await controller.getAllEventFileNames()
     // Test is saved
