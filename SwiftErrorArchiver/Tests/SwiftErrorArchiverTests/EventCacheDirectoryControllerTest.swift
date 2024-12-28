@@ -22,6 +22,12 @@ final class EventCacheDirectoryControllerTest: XCTestCase {
 
   struct TestEvent: Codable, Equatable {
     let message: String
+    let id: UUID
+
+    init(message: String) {
+      id = .init()
+      self.message = message
+    }
   }
 
   func test_ActFile() async throws {
@@ -30,13 +36,13 @@ final class EventCacheDirectoryControllerTest: XCTestCase {
     _ = try await controller.save(event: willSaveEvent)
     let eventFileNames = await controller.getAllEventFileNames()
     // Test is saved
-    XCTAssertEqual(testEventMessage.count, 1)
+    XCTAssertEqual(eventFileNames.count, 1)
 
+    // Test load file is equal with prev init object
     let savedFileName = eventFileNames.first!
     let currentEventData = await controller.getEvent(from: savedFileName)!.data
     let eventObject = try! JSONDecoder().decode(TestEvent.self, from: currentEventData)
     XCTAssertEqual(willSaveEvent, eventObject)
-
     await controller.delete(fileName: savedFileName)
 
     // Test is deleted
