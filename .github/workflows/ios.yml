@@ -11,15 +11,19 @@ on:
 jobs:
   build:
     runs-on: macos-latest
+
     steps:
+      # 코드 체크아웃
+      - uses: actions/checkout@v4
+
+      # Swift 환경 설정
       - uses: SwiftyLab/setup-swift@latest
 
-      - name: Get swift version
+      # Swift 버전 확인
+      - name: Get Swift version
         run: swift --version
-      
-      - name: Get Tree
-        run: tree .
 
+      # Build 및 Test 실행
       - name: Build and Test Project
         run: |
           cd SwiftErrorArchiver
