@@ -26,4 +26,5 @@ public protocol EventStorageControllerInterface: Sendable, Actor {
   func delete(fileName: String)
   func getEvent(from fileName: String) -> EventWithDate?
   func getAllEventFileNames() -> [String]
+  func deleteAllEventFromDirectory()
 }

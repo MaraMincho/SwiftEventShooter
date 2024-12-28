@@ -73,6 +73,12 @@ public actor EventCacheDirectoryController: EventStorageControllerInterface, Sen
     }
   }
 
+  public func deleteAllEventFromDirectory() {
+    getAllEventFileNames().forEach { fileName in
+      delete(fileName: fileName)
+    }
+  }
+
   private func filePath(for event: EventWithDate) -> (url: URL, fileName: String) {
     let dateWithIntDescription = Int(event.date).description
     let uniqueIdentifier = UUID().description
