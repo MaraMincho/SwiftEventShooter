@@ -1,4 +1,4 @@
-name: Swift
+name: Swift CI
 
 on:
   push:
@@ -10,20 +10,32 @@ on:
 
 jobs:
   build:
-    name: Swift ${{ matrix.swift }} on ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        swift: ["6", "5"]
+        include:
+          - os: ubuntu-latest
+            swift: "5"
+          - os: macos-latest
+            swift: "5"
     runs-on: ${{ matrix.os }}
+
     steps:
-      - uses: swift-actions/setup-swift@v2.1.0
+      - uses: actions/checkout@v4
+
+      - name: Set up Swift
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer
+
+      - name: Install Swift
+        uses: swift-actions/setup-swift@v2.1.0
         with:
           swift-version: ${{ matrix.swift }}
-      - name: Get swift version
-        run: swift --version # Swift 5.10.1
-      - uses: actions/checkout@v4
-      - name: Build
-        run: swift build --package-path SwiftErrorArchiver/ 
-      - name: Run tests
-        run: swift test --package-path SwiftErrorArchiver/ 
+
+      - name: Check Swift version
+        run: swift --version
+
+      - name: Build Project
+        run: swift build --package-path SwiftErrorArchiver/
+
+      - name: Run Tests
+        run: swift test --package-path SwiftErrorArchiver/
