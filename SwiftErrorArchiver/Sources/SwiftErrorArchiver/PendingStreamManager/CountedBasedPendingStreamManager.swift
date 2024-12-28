@@ -1,37 +1,37 @@
 
 import Foundation
 
-final class CountedBasedPendingStreamManager: PendingStreamManagerInterface, @unchecked Sendable {
+public final class CountedBasedPendingStreamManager: PendingStreamManagerInterface, @unchecked Sendable {
   private var capacity: Int
   private var isFinished: Bool = true
   private let queue = DispatchQueue(label: "TargetValueManagerQueue")
 
-  var getCurrentMaximumTransmissionUnit: Int { capacity }
+  public var getCurrentMaximumTransmissionUnit: Int { capacity }
 
   var currentMaximumTransmissionUnit: Int {
     capacity
   }
 
-  var isFinishPrevTransmission: Bool {
+  public var isFinishPrevTransmission: Bool {
     queue.sync {
       isFinished
     }
   }
 
-  func finishTransmission() {
+  public func finishTransmission() {
     queue.sync {
       isFinished = true
     }
   }
 
-  func startTransmission() {
+  public func startTransmission() {
     isFinished = false
   }
 
-  init(capacity: Int) {
+  public init(capacity: Int) {
     self.capacity = capacity
   }
 
-  func failedTransmission() {}
-  func successTransmission() {}
+  public func failedTransmission() {}
+  public func successTransmission() {}
 }

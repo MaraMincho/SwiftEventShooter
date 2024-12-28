@@ -22,8 +22,8 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
     discordNetworkURL: String,
     nowNetworkingStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .nowNetworking),
     networkingFailedStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .failedNetworking),
-    timeInterval: Double = 5,
-    pendingStreamManager: PendingStreamManagerInterface = TCPTahoe(),
+    timeInterval: Double = 60,
+    pendingStreamManager: PendingStreamManagerInterface = CountedBasedPendingStreamManager(capacity: 4),
     networkMonitor: NetworkMonitorInterface = NetworkMonitor()
   ) {
     self.provider = provider
@@ -49,8 +49,8 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
     var fileName: String? = nil
     do {
       fileName = try await nowNetworkingStorageController?.save(event: event)
-      let responseData = try await sendDiscordLog(currentString)
-      SwiftErrorArchiverLogger.debug(message: "Network worked correctly", dumpObject: responseData)
+      try await sendDiscordLog(currentString)
+      SwiftErrorArchiverLogger.debug(message: "Network worked correctly")
     } catch {
       await failedNetworkingRoutine(event: event)
       SwiftErrorArchiverLogger.error(message: "Network error occurred", dumpObject: error)
@@ -156,7 +156,6 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
 
   private func sendDiscordLog(_ content: String) async throws {
     for currentContent in content.splitByLength(Constants.discordTextLength) {
-      let payload: [String: Any] = ["content": currentContent]
       _ = try await provider.request(discordNetworkTarget.setBody(DiscordMessage(content: currentContent)))
     }
   }

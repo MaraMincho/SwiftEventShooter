@@ -1,20 +1,20 @@
 
 import Foundation
 
-final class TCPCUBIC: PendingStreamManagerInterface, @unchecked Sendable {
+public final class TCPCUBIC: PendingStreamManagerInterface, @unchecked Sendable {
   private let queue = DispatchQueue(label: "TCPCUBICQueue")
   /// x^3, x^2, x^1, x^0
   let cubicFunctionArguments: (Double, Double, Double, Double)
   private var failedTransmissionCount: Int = 0
   private var isFinished: Bool = true
   private var currentTime: Double = 0
-  var isFinishPrevTransmission: Bool {
+  public var isFinishPrevTransmission: Bool {
     queue.sync {
       isFinished
     }
   }
 
-  var getCurrentMaximumTransmissionUnit: Int {
+  public var getCurrentMaximumTransmissionUnit: Int {
     queue.sync { [cubicFunctionArguments] in
       let cubicFunctionArguments: [Double] = [
         cubicFunctionArguments.0,
@@ -44,21 +44,21 @@ final class TCPCUBIC: PendingStreamManagerInterface, @unchecked Sendable {
     currentTime = 0
   }
 
-  func failedTransmission() {
+  public func failedTransmission() {
     queue.sync { [weak self] in
       guard let self else { return }
       failedTransmissionCount += 1
     }
   }
 
-  func successTransmission() {
+  public func successTransmission() {
     queue.sync { [weak self] in
       guard let self else { return }
       increaseTransmission()
     }
   }
 
-  func finishTransmission() {
+  public func finishTransmission() {
     queue.sync { [weak self] in
       guard let self else { return }
       isFinished = true
@@ -70,7 +70,7 @@ final class TCPCUBIC: PendingStreamManagerInterface, @unchecked Sendable {
     }
   }
 
-  func startTransmission() {
+  public func startTransmission() {
     queue.sync { [weak self] in
       guard let self else { return }
       isFinished = false
