@@ -14,6 +14,8 @@ public struct SwiftErrorArchiverSDK: Sendable {
     eventController = switch type {
     case let .discord(controller):
       controller
+    case let .slack(controller):
+      controller
     }
   }
 
@@ -32,6 +34,7 @@ public struct SwiftErrorArchiverSDK: Sendable {
 
 public enum SwiftErrorArchiverSDKInitialType {
   case discord(DiscordErrorStreamController)
+  case slack(SlackErrorStreamController)
 }
 
 // MARK: - SwiftErrorArchiverFactory

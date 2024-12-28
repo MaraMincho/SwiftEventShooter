@@ -17,24 +17,19 @@ public actor EventCacheDirectoryController: EventStorageControllerInterface, Sen
     initialConfigure()
   }
 
-  public init?(storageControllerType: StorageControllerType) {
-    guard let directoryURL = switch storageControllerType {
-    case .failedNetworking:
-      FileManagerUtility.networkingFailedLogDirectory
-    case .nowNetworking:
-      FileManagerUtility.logsDirectory
-    }else {
+  public init?(storageControllerType type: PlatformType) {
+    guard let directoryURL = type.directoryURL else {
       return nil
     }
-    logsDirectory = directoryURL.appendingPathExtension(Constants.defaultDirectoryURL)
+    logsDirectory = directoryURL
     initialConfigure()
   }
 
   nonisolated private func initialConfigure() {
     let fileManager = FileManager.default
-    let fileDirectoryString = logsDirectory.absoluteString
-    if fileManager.fileExists(atPath: fileDirectoryString) {
-      try! fileManager.createDirectory(atPath: fileDirectoryString, withIntermediateDirectories: true)
+    let directoryPath = logsDirectory.path
+    if !fileManager.fileExists(atPath: directoryPath) {
+      try? fileManager.createDirectory(atPath: directoryPath, withIntermediateDirectories: true)
     }
   }
 
@@ -72,7 +67,7 @@ public actor EventCacheDirectoryController: EventStorageControllerInterface, Sen
       let files = try FileManager.default.contentsOfDirectory(atPath: logsDirectory.path)
       return files
     } catch {
-      print(logsDirectory)
+      print(logsDirectory.path)
       print("Failed to get log file names: \(error.localizedDescription)")
       return []
     }
@@ -88,22 +83,41 @@ public actor EventCacheDirectoryController: EventStorageControllerInterface, Sen
   public enum Constants {
     public static let defaultDirectoryURL = "Logs/Error"
   }
-  enum DirectoryType {
-    case nowNetworking
-    case failed
-    var directoryURL: URL? {
-      switch self {
-      case .nowNetworking:
-        FileManagerUtility.logsDirectory
-      case .failed:
-        FileManagerUtility.networkingFailedLogDirectory
-      }
+}
+
+public enum PlatformType {
+  case discord(StorageControllerType)
+  case slack(StorageControllerType)
+
+  var directoryName: String {
+    switch self {
+    case .discord:
+      "Discord"
+    case .slack:
+      "Slack"
     }
   }
 
-  public enum StorageControllerType {
-    case nowNetworking
-    case failedNetworking
+  var directoryURL: URL? {
+    switch self {
+    case let .discord(type):
+      type.directoryURL?.appendingPathComponent(directoryName)
+    case let .slack(type):
+      type.directoryURL?.appendingPathComponent(directoryName)
+    }
+  }
+}
+
+public enum StorageControllerType {
+  case nowNetworking
+  case failedNetworking
+  var directoryURL: URL? {
+    switch self {
+    case .nowNetworking:
+      FileManagerUtility.logsDirectory
+    case .failedNetworking:
+      FileManagerUtility.networkingFailedLogDirectory
+    }
   }
 }
 

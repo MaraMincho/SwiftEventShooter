@@ -1,27 +1,25 @@
 //
-//  DiscordErrorStreamController.swift
+//  File.swift
 //  SwiftErrorArchiver
 //
-//  Created by MaraMincho on 12/20/24.
+//  Created by MaraMincho on 12/28/24.
 //
 
 import Foundation
 
-// MARK: - DiscordErrorStreamController
-
-public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
+public struct SlackErrorStreamController: EventControllerInterface, Sendable {
   private let nowNetworkingStorageController: EventStorageControllerInterface?
   private let networkingFailedStorageController: EventStorageControllerInterface?
   private let timeInterval: TimeInterval
-  private let provider: SDKNetworkProvider<DiscordNetworkTargetType>
-  private let discordNetworkTarget: DiscordNetworkTargetType
+  private let provider: SDKNetworkProvider<SlackNetworkTargetType>
+  private let slackNetworkTarget: SlackNetworkTargetType
   private let pendingStreamManager: PendingStreamManagerInterface
   private let networkMonitor: NetworkMonitorInterface
   public init(
-    provider: SDKNetworkProvider<DiscordNetworkTargetType> = .init(),
-    discordNetworkURL: String,
-    nowNetworkingStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .discord(.nowNetworking)),
-    networkingFailedStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .discord(.failedNetworking)),
+    provider: SDKNetworkProvider<SlackNetworkTargetType> = .init(),
+    slackWebHookURL: String,
+    nowNetworkingStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .slack(.nowNetworking)),
+    networkingFailedStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .slack(.failedNetworking)),
     timeInterval: Double = 60,
     pendingStreamManager: PendingStreamManagerInterface = CountedBasedPendingStreamManager(capacity: 4),
     networkMonitor: NetworkMonitorInterface = NetworkMonitor()
@@ -30,7 +28,7 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
     self.nowNetworkingStorageController = nowNetworkingStorageController
     self.networkingFailedStorageController = networkingFailedStorageController
     self.timeInterval = timeInterval
-    discordNetworkTarget = .init(webHookURLString: discordNetworkURL)
+    slackNetworkTarget = .init(webHookURLString: slackWebHookURL)
     self.pendingStreamManager = pendingStreamManager
     self.networkMonitor = networkMonitor
   }
@@ -49,7 +47,7 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
     var fileName: String? = nil
     do {
       fileName = try await nowNetworkingStorageController?.save(event: event)
-      try await sendDiscordLog(currentString)
+      try await sendSlackLog(currentString)
       SwiftErrorArchiverLogger.debug(message: "Network worked correctly")
     } catch {
       await failedNetworkingRoutine(event: event)
@@ -125,7 +123,7 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
             if
               let prevEvent = await networkingFailedStorageController.getEvent(from: prevEventName),
               let currentMessage = String(data: prevEvent.data, encoding: .utf8) {
-              try await sendDiscordLog(currentMessage)
+              try await sendSlackLog(currentMessage)
             }
             await networkingFailedStorageController.delete(fileName: prevEventName)
           } catch {
@@ -154,9 +152,9 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
     }
   }
 
-  private func sendDiscordLog(_ content: String) async throws {
+  private func sendSlackLog(_ content: String) async throws {
     for currentContent in content.splitByLength(Constants.discordTextLength) {
-      _ = try await provider.request(discordNetworkTarget.setBody(DiscordMessage(content: currentContent)))
+      _ = try await provider.request(slackNetworkTarget.setBody(Slack(text: currentContent)))
     }
   }
 
@@ -164,10 +162,10 @@ public struct DiscordErrorStreamController: EventControllerInterface, Sendable {
     static let discordTextLength: Int = 1900
   }
 
-  struct DiscordMessage<Item: Encodable>: Encodable {
-    let content: Item
-    init(content: Item) {
-      self.content = content
+  struct Slack<Item: Encodable>: Encodable {
+    let text: Item
+    init(text: Item) {
+      self.text = text
     }
   }
 }
