@@ -1,7 +1,5 @@
 //
 //  URLSessionDataTaskInterface.swift
-//  assignment-sdk
-//
 //  Created by MaraMincho on 12/2/24.
 //
 
