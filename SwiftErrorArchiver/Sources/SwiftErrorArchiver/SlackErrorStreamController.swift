@@ -10,11 +10,11 @@ import Foundation
 public struct SlackErrorStreamController: EventControllerInterface, Sendable {
   private let nowNetworkingStorageController: EventStorageControllerInterface?
   private let networkingFailedStorageController: EventStorageControllerInterface?
-  private let timeInterval: TimeInterval
   private let provider: SDKNetworkProvider<SlackNetworkTargetType>
   private let slackNetworkTarget: SlackNetworkTargetType
   private let pendingStreamManager: PendingStreamManagerInterface
   private let networkMonitor: NetworkMonitorInterface
+  private let timer: TimerManager
   public init(
     provider: SDKNetworkProvider<SlackNetworkTargetType> = .init(),
     slackWebHookURL: String,
@@ -27,10 +27,10 @@ public struct SlackErrorStreamController: EventControllerInterface, Sendable {
     self.provider = provider
     self.nowNetworkingStorageController = nowNetworkingStorageController
     self.networkingFailedStorageController = networkingFailedStorageController
-    self.timeInterval = timeInterval
     slackNetworkTarget = .init(webHookURLString: slackWebHookURL)
     self.pendingStreamManager = pendingStreamManager
     self.networkMonitor = networkMonitor
+    timer = .init(interval: timeInterval)
   }
 
   public func post(_ event: some EventInterface) async {
@@ -139,7 +139,7 @@ public struct SlackErrorStreamController: EventControllerInterface, Sendable {
     Task {
       await initialSendPendingLogRoutine()
     }
-    Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true) { _ in
+    timer.startTimer {
       timerAction()
     }
   }
