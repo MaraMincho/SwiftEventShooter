@@ -8,8 +8,8 @@
 import Foundation
 import OSLog
 
-public enum SwiftErrorArchiverLogger {
-  private static let logger = Logger()
+public enum SwiftErrorArchiverLogger: Sendable {
+  private nonisolated(unsafe) static let logger = Logger()
   static func debug(message: String? = nil, dumpObject: Any? = nil) {
     logger.debug("\(makeLogMessage(message: message, dumpObject: dumpObject))")
   }
