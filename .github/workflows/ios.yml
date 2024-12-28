@@ -16,9 +16,9 @@ jobs:
 
       - name: Get swift version
         run: swift --version
-
-      - name: Check Swift version
-        run: swift --version
+      
+      - name: Get Tree
+        run: tree .
 
       - name: Build and Test Project
         run: |
