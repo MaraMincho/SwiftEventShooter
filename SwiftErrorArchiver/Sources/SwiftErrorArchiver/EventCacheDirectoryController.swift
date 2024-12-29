@@ -48,7 +48,7 @@ public actor EventCacheDirectoryController: EventStorageControllerInterface, Sen
       let data = try Data(contentsOf: filePath)
       return try JSONDecoder.decode(EventWithDate.self, from: data)
     } catch {
-      print("Failed to load event from \(filePath): \(error)")
+      SwiftErrorArchiverLogger.error(message: "Failed to load event from \(filePath): \(error)")
       return nil
     }
   }
@@ -58,7 +58,7 @@ public actor EventCacheDirectoryController: EventStorageControllerInterface, Sen
     do {
       try manager.removeItem(atPath: logsDirectory.appendingPathComponent(fileName).path)
     } catch {
-      print("Failed to delete event: \(error)")
+      SwiftErrorArchiverLogger.error(message: "Failed to delete event: \(error)")
     }
   }
 
@@ -67,8 +67,7 @@ public actor EventCacheDirectoryController: EventStorageControllerInterface, Sen
       let files = try FileManager.default.contentsOfDirectory(atPath: logsDirectory.path)
       return files
     } catch {
-      print(logsDirectory.path)
-      print("Failed to get log file names: \(error.localizedDescription)")
+      SwiftErrorArchiverLogger.error(message: "Failed to get log file names: \(error.localizedDescription)")
       return []
     }
   }
