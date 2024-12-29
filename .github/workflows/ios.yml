@@ -27,5 +27,4 @@ jobs:
       - name: Build and Test Project
         run: |
           cd SwiftErrorArchiver
-          swift build 
           swift test 
