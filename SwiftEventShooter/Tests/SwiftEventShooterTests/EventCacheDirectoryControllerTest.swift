@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import SwiftErrorArchiver
+@testable import SwiftEventShooter
 
 final class EventCacheDirectoryControllerTest: XCTestCase {
   var controller: EventCacheDirectoryController! = nil

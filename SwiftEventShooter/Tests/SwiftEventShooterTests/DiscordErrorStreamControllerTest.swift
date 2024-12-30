@@ -1,17 +1,17 @@
 //
-//  File.swift
+//  EventControllerTest.swift
 //  SwiftErrorArchiver
 //
 //  Created by MaraMincho on 12/28/24.
 //
 
-@testable import SwiftErrorArchiver
+@testable import SwiftEventShooter
 import XCTest
 
 // MARK: - LogControllerTest
 
 /// White box tests
-final class SlackControllerTest: XCTestCase {
+final class EventControllerTest: XCTestCase {
   var controller: EventControllerInterface!
 
   override func setUpWithError() throws {
@@ -49,9 +49,9 @@ final class SlackControllerTest: XCTestCase {
       }
       return (message, .init())
     })
-    controller = SlackErrorStreamController(
+    controller = DiscordErrorStreamController(
       provider: .init(session: mockSession),
-      slackWebHookURL: "https://exmpale.com",
+      discordNetworkURL: "https://exmpale.com",
       nowNetworkingStorageController: storageController,
       networkingFailedStorageController: failedStorageController,
       timeInterval: 1,
@@ -87,9 +87,9 @@ final class SlackControllerTest: XCTestCase {
       expectation.fulfill()
     }
 
-    controller = SlackErrorStreamController(
+    controller = DiscordErrorStreamController(
       provider: .init(session: MockURLSession(), providerElement: .init(timeoutInterval: 1)),
-      slackWebHookURL: "https://exmpale.com",
+      discordNetworkURL: "https://exmpale.com",
       nowNetworkingStorageController: storageController,
       networkingFailedStorageController: failedStorageController,
       timeInterval: 1,
@@ -110,7 +110,7 @@ final class SlackControllerTest: XCTestCase {
   }
 }
 
-extension SlackControllerTest {
+extension EventControllerTest {
   struct TestError: LocalizedError {
     var errorDescription: String?
   }

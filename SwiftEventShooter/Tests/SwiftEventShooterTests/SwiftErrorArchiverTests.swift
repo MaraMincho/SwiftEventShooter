@@ -1,4 +1,4 @@
-@testable import SwiftErrorArchiver
+@testable import SwiftEventShooter
 import Testing
 
 @Test
