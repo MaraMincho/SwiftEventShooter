@@ -12,7 +12,7 @@ import SwiftUI
 
 struct ContentView: View {
   /// Type the your discord url String
-  let sdk = SwiftErrorArchiverSDK(type: .discord(.init(discordNetworkURL: "Any Discord WebHook URL")))
+  let sdk = SwiftEventShooterSDK(type: .discord(.init(discordNetworkURL: "Any Discord WebHook URL")))
 
   var body: some View {
     VStack {
