@@ -26,5 +26,5 @@ jobs:
       # Build 및 Test 실행
       - name: Build and Test Project
         run: |
-          cd SwiftErrorArchiver
+          cd SwiftEventShooter
           swift test 
