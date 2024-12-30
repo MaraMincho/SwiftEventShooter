@@ -1,6 +1,6 @@
-# SwiftErrorArchiver
+# SwiftEventShotter
 
-SwiftErrorArchiver is focused on transmitting errors that occur on the client-side via platforms such as Discord or Slack. 
+SwiftEventShotter is focused on transmitting errors that occur on the client-side via platforms such as Discord or Slack. 
 The features are designed for personal apps or applications with a small user base in the early stages. 
 It offers a simple way to design and view platform-specific logging objects or messages. Currently, Discord and Slack are supported.
 

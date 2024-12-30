@@ -1,25 +1,27 @@
 //
-//  File.swift
-//  SwiftErrorArchiver
+//  DiscordEventStreamController.swift
+//  DiscordEventStreamController
 //
-//  Created by MaraMincho on 12/28/24.
+//  Created by MaraMincho on 12/20/24.
 //
 
 import Foundation
 
-public struct SlackErrorStreamController: EventControllerInterface, Sendable {
+// MARK: - DiscordEventStreamController
+
+public struct DiscordEventStreamController: EventStreamControllerInterface, Sendable {
   private let nowNetworkingStorageController: EventStorageControllerInterface?
   private let networkingFailedStorageController: EventStorageControllerInterface?
-  private let provider: SDKNetworkProvider<SlackNetworkTargetType>
-  private let slackNetworkTarget: SlackNetworkTargetType
+  private let provider: SDKNetworkProvider<DiscordNetworkTargetType>
+  private let discordNetworkTarget: DiscordNetworkTargetType
   private let pendingStreamManager: PendingStreamManagerInterface
   private let networkMonitor: NetworkMonitorInterface
   private let timer: TimerManager
   public init(
-    provider: SDKNetworkProvider<SlackNetworkTargetType> = .init(),
-    slackWebHookURL: String,
-    nowNetworkingStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .slack(.nowNetworking)),
-    networkingFailedStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .slack(.failedNetworking)),
+    provider: SDKNetworkProvider<DiscordNetworkTargetType> = .init(),
+    discordNetworkURL: String,
+    nowNetworkingStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .discord(.nowNetworking)),
+    networkingFailedStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .discord(.failedNetworking)),
     timeInterval: Double = 60,
     pendingStreamManager: PendingStreamManagerInterface = CountedBasedPendingStreamManager(capacity: 4),
     networkMonitor: NetworkMonitorInterface = NetworkMonitor()
@@ -27,7 +29,7 @@ public struct SlackErrorStreamController: EventControllerInterface, Sendable {
     self.provider = provider
     self.nowNetworkingStorageController = nowNetworkingStorageController
     self.networkingFailedStorageController = networkingFailedStorageController
-    slackNetworkTarget = .init(webHookURLString: slackWebHookURL)
+    discordNetworkTarget = .init(webHookURLString: discordNetworkURL)
     self.pendingStreamManager = pendingStreamManager
     self.networkMonitor = networkMonitor
     timer = .init(interval: timeInterval)
@@ -35,23 +37,23 @@ public struct SlackErrorStreamController: EventControllerInterface, Sendable {
 
   public func post(_ event: some EventInterface) async {
     guard networkMonitor.isNetworkAvailable else {
-      SwiftErrorArchiverLogger.debug(message: "Network is not available")
+      SwiftEventShooterLogger.debug(message: "Network is not available")
       return
     }
     guard let data = try? JSONEncoder.encode(event),
           let currentString = String(data: data, encoding: .utf8)
     else {
-      SwiftErrorArchiverLogger.error(message: "Json decoding error occurred", dumpObject: event)
+      SwiftEventShooterLogger.error(message: "Json decoding error occurred", dumpObject: event)
       return
     }
     var fileName: String? = nil
     do {
       fileName = try await nowNetworkingStorageController?.save(event: event)
-      try await sendSlackLog(currentString)
-      SwiftErrorArchiverLogger.debug(message: "Network worked correctly")
+      try await sendDiscordLog(currentString)
+      SwiftEventShooterLogger.debug(message: "Network worked correctly")
     } catch {
       await failedNetworkingRoutine(event: event)
-      SwiftErrorArchiverLogger.error(message: "Network error occurred", dumpObject: error)
+      SwiftEventShooterLogger.error(message: "Network error occurred", dumpObject: error)
     }
 
     // 만약 fileName이 있다면
@@ -64,7 +66,7 @@ public struct SlackErrorStreamController: EventControllerInterface, Sendable {
     do {
       try await networkingFailedStorageController?.save(event: event)
     } catch {
-      SwiftErrorArchiverLogger.error(message: "Failed to save failed networking event to storage", dumpObject: event)
+      SwiftEventShooterLogger.error(message: "Failed to save failed networking event to storage", dumpObject: event)
     }
   }
 
@@ -93,7 +95,7 @@ public struct SlackErrorStreamController: EventControllerInterface, Sendable {
       for await result in group {
         switch result {
         case let .failure(error):
-          SwiftErrorArchiverLogger.error(message: "Unable to save failedNetworking event to storage", dumpObject: error)
+          SwiftEventShooterLogger.error(message: "Unable to save failedNetworking event to storage", dumpObject: error)
         case .success:
           break
         }
@@ -103,12 +105,12 @@ public struct SlackErrorStreamController: EventControllerInterface, Sendable {
 
   public func sendPendingEvents() async {
     guard networkMonitor.isNetworkAvailable else {
-      SwiftErrorArchiverLogger.debug(message: "Network is not available")
+      SwiftEventShooterLogger.debug(message: "Network is not available")
       return
     }
 
     guard let networkingFailedStorageController else {
-      SwiftErrorArchiverLogger.error(message: "NetworkingFailedStorageController is not initiated")
+      SwiftEventShooterLogger.error(message: "NetworkingFailedStorageController is not initiated")
       return
     }
 
@@ -123,7 +125,7 @@ public struct SlackErrorStreamController: EventControllerInterface, Sendable {
             if
               let prevEvent = await networkingFailedStorageController.getEvent(from: prevEventName),
               let currentMessage = String(data: prevEvent.data, encoding: .utf8) {
-              try await sendSlackLog(currentMessage)
+              try await sendDiscordLog(currentMessage)
             }
             await networkingFailedStorageController.delete(fileName: prevEventName)
           } catch {
@@ -152,9 +154,9 @@ public struct SlackErrorStreamController: EventControllerInterface, Sendable {
     }
   }
 
-  private func sendSlackLog(_ content: String) async throws {
+  private func sendDiscordLog(_ content: String) async throws {
     for currentContent in content.splitByLength(Constants.discordTextLength) {
-      _ = try await provider.request(slackNetworkTarget.setBody(Slack(text: currentContent)))
+      _ = try await provider.request(discordNetworkTarget.setBody(DiscordMessage(content: currentContent)))
     }
   }
 
@@ -162,10 +164,10 @@ public struct SlackErrorStreamController: EventControllerInterface, Sendable {
     static let discordTextLength: Int = 1900
   }
 
-  struct Slack<Item: Encodable>: Encodable {
-    let text: Item
-    init(text: Item) {
-      self.text = text
+  struct DiscordMessage<Item: Encodable>: Encodable {
+    let content: Item
+    init(content: Item) {
+      self.content = content
     }
   }
 }

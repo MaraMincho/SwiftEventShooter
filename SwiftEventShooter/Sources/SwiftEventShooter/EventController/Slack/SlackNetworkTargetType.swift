@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  SwiftErrorArchiver
+//  SlackNetworkTargetType.swift
+//  SwiftEventShooter
 //
 //  Created by MaraMincho on 12/28/24.
 //

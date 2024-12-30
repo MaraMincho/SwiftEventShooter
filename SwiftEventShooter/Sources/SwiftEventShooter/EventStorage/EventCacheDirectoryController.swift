@@ -1,11 +1,13 @@
 //
 //  EventCacheDirectoryController.swift
-//  SwiftErrorArchiver
+//  SwiftEventShooter
 //
 //  Created by MaraMincho on 12/20/24.
 //
 
 import Foundation
+
+// MARK: - EventCacheDirectoryController
 
 public actor EventCacheDirectoryController: EventStorageControllerInterface, Sendable {
   private let logsDirectory: URL
@@ -25,7 +27,7 @@ public actor EventCacheDirectoryController: EventStorageControllerInterface, Sen
     initialConfigure()
   }
 
-  nonisolated private func initialConfigure() {
+  private nonisolated func initialConfigure() {
     let fileManager = FileManager.default
     let directoryPath = logsDirectory.path
     if !fileManager.fileExists(atPath: directoryPath) {
@@ -48,7 +50,7 @@ public actor EventCacheDirectoryController: EventStorageControllerInterface, Sen
       let data = try Data(contentsOf: filePath)
       return try JSONDecoder.decode(EventWithDate.self, from: data)
     } catch {
-      SwiftErrorArchiverLogger.error(message: "Failed to load event from \(filePath): \(error)")
+      SwiftEventShooterLogger.error(message: "Failed to load event from \(filePath): \(error)")
       return nil
     }
   }
@@ -58,7 +60,7 @@ public actor EventCacheDirectoryController: EventStorageControllerInterface, Sen
     do {
       try manager.removeItem(atPath: logsDirectory.appendingPathComponent(fileName).path)
     } catch {
-      SwiftErrorArchiverLogger.error(message: "Failed to delete event: \(error)")
+      SwiftEventShooterLogger.error(message: "Failed to delete event: \(error)")
     }
   }
 
@@ -67,7 +69,7 @@ public actor EventCacheDirectoryController: EventStorageControllerInterface, Sen
       let files = try FileManager.default.contentsOfDirectory(atPath: logsDirectory.path)
       return files
     } catch {
-      SwiftErrorArchiverLogger.error(message: "Failed to get log file names: \(error.localizedDescription)")
+      SwiftEventShooterLogger.error(message: "Failed to get log file names: \(error.localizedDescription)")
       return []
     }
   }
@@ -89,6 +91,8 @@ public actor EventCacheDirectoryController: EventStorageControllerInterface, Sen
     public static let defaultDirectoryURL = "Logs/Error"
   }
 }
+
+// MARK: - PlatformType
 
 public enum PlatformType {
   case discord(StorageControllerType)
@@ -113,6 +117,8 @@ public enum PlatformType {
   }
 }
 
+// MARK: - StorageControllerType
+
 public enum StorageControllerType {
   case nowNetworking
   case failedNetworking
@@ -125,6 +131,8 @@ public enum StorageControllerType {
     }
   }
 }
+
+// MARK: - FileManagerUtility
 
 private enum FileManagerUtility {
   static var logsDirectory: URL? {

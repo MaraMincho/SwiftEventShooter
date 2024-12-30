@@ -5,11 +5,13 @@
 //  Created by MaraMincho on 12/23/24.
 //
 
-import SwiftUI
 import SwiftEventShooter
+import SwiftUI
+
+// MARK: - ContentView
 
 struct ContentView: View {
-  // Type the your discord url String
+  /// Type the your discord url String
   let sdk = SwiftErrorArchiverSDK(type: .discord(.init(discordNetworkURL: "Any Discord WebHook URL")))
 
   var body: some View {
@@ -26,7 +28,7 @@ struct ContentView: View {
       }
 
       Button {
-        for ind in 1...100 {
+        for ind in 1 ... 100 {
           sdk.sendMessage(event: TestEventObject(message: "\(ind)Message입니다."))
           sdk.sendMessage(event: "Hello world")
         }
@@ -40,6 +42,8 @@ struct ContentView: View {
     .padding()
   }
 }
+
+// MARK: - TestEventObject
 
 struct TestEventObject: EventInterface {
   let message: String

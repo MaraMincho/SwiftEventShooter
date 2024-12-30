@@ -1,6 +1,6 @@
 //
 //  DiscordNetworkTargetType.swift
-//  SwiftErrorArchiver
+//  DiscordNetworkTargetType
 //
 //  Created by MaraMincho on 12/20/24.
 //

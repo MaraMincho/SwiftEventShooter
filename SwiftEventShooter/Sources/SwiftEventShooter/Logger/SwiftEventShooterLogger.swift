@@ -1,6 +1,6 @@
 //
-//  SwiftErrorArchiverLogger.swift
-//  SwiftErrorArchiver
+//  SwiftEventShooterLogger.swift
+//  SwiftEventShooter
 //
 //  Created by MaraMincho on 12/23/24.
 //
@@ -8,7 +8,7 @@
 import Foundation
 import OSLog
 
-public enum SwiftErrorArchiverLogger: Sendable {
+public enum SwiftEventShooterLogger: Sendable {
   private nonisolated(unsafe) static let logger = Logger()
   static func debug(message: String? = nil, dumpObject: Any? = nil) {
     logger.debug("\(makeLogMessage(message: message, dumpObject: dumpObject))")

@@ -1,12 +1,12 @@
 //
 //  EventCacheDirectoryControllerTest.swift
-//  SwiftErrorArchiver
+//  SwiftEventShooterSDK
 //
 //  Created by MaraMincho on 12/28/24.
 //
 
-import XCTest
 @testable import SwiftEventShooter
+import XCTest
 
 final class EventCacheDirectoryControllerTest: XCTestCase {
   var controller: EventCacheDirectoryController! = nil
@@ -48,7 +48,5 @@ final class EventCacheDirectoryControllerTest: XCTestCase {
     // Test is deleted
     let fileNamesAfterDeletedNewFile = await controller.getAllEventFileNames()
     XCTAssertTrue(fileNamesAfterDeletedNewFile.isEmpty)
-
   }
-
 }

@@ -11,8 +11,9 @@ public struct MockURLSession: @unchecked Sendable, URLSessionInterface {
   public init(
     completion: ((_ request: URLRequest, _ delegate: (any URLSessionTaskDelegate)?) async throws -> (Data, URLResponse))? = nil
   ) {
-    self.userCompletion = completion
+    userCompletion = completion
   }
+
   public func data(for request: URLRequest, delegate: (any URLSessionTaskDelegate)?) async throws -> (Data, URLResponse) {
     if let userCompletion {
       return try await userCompletion(request, delegate)

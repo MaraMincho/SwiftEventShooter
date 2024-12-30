@@ -1,6 +1,6 @@
 //
 //  EmptyDataError.swift
-//  SwiftErrorArchiver
+//  SwiftEventShooter
 //
 //  Created by MaraMincho on 12/23/24.
 //

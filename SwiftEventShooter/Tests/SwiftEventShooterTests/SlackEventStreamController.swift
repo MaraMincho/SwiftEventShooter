@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  SwiftErrorArchiver
+//  SlackEventStreamController.swift
+//  SwiftEventShooterSDK
 //
 //  Created by MaraMincho on 12/28/24.
 //
@@ -8,11 +8,11 @@
 @testable import SwiftEventShooter
 import XCTest
 
-// MARK: - LogControllerTest
+// MARK: - SlackControllerTest
 
 /// White box tests
 final class SlackControllerTest: XCTestCase {
-  var controller: EventControllerInterface!
+  var controller: EventStreamControllerInterface!
 
   override func setUpWithError() throws {
     try super.setUpWithError()
@@ -42,14 +42,14 @@ final class SlackControllerTest: XCTestCase {
     DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
       expectation2.fulfill()
     }
-    let mockSession = MockURLSession(completion: { request, delegate in
+    let mockSession = MockURLSession(completion: { _, _ in
       if availableFailCount > 0 {
         availableFailCount -= 1
         throw TestError(errorDescription: availableFailCount.description)
       }
       return (message, .init())
     })
-    controller = SlackErrorStreamController(
+    controller = SlackEventStreamController(
       provider: .init(session: mockSession),
       slackWebHookURL: "https://exmpale.com",
       nowNetworkingStorageController: storageController,
@@ -61,7 +61,7 @@ final class SlackControllerTest: XCTestCase {
 
     // Act
     for _ in 0 ..< taskCount {
-        await controller.post(event)
+      await controller.post(event)
     }
     controller.configure()
 
@@ -79,7 +79,7 @@ final class SlackControllerTest: XCTestCase {
     // Arrange
     let event = TestEvent(message: "Some Category")
     let eventData = try! JSONEncoder.encode(event)
-    let eventWithDates = (0 ... 30).map { _ in EventWithDate(data: eventData)}
+    let eventWithDates = (0 ... 30).map { _ in EventWithDate(data: eventData) }
     let storageController: EventStorageControllerInterface = TestStorageController(eventWithDates: eventWithDates)
     let failedStorageController: EventStorageControllerInterface = TestStorageController()
     let expectation: XCTestExpectation = .init()
@@ -87,7 +87,7 @@ final class SlackControllerTest: XCTestCase {
       expectation.fulfill()
     }
 
-    controller = SlackErrorStreamController(
+    controller = SlackEventStreamController(
       provider: .init(session: MockURLSession(), providerElement: .init(timeoutInterval: 1)),
       slackWebHookURL: "https://exmpale.com",
       nowNetworkingStorageController: storageController,
@@ -114,12 +114,13 @@ extension SlackControllerTest {
   struct TestError: LocalizedError {
     var errorDescription: String?
   }
+
   var targetType: DiscordNetworkTargetType {
     .init(baseURL: "https//example.com", path: nil, method: .post, body: nil, headers: [:])
   }
 
   var provider: SDKNetworkProvider<DiscordNetworkTargetType> {
-    .init(session: MockURLSession(completion: { request, delegate in
+    .init(session: MockURLSession(completion: { _, _ in
       return (Data(), .init())
     }))
   }
@@ -128,7 +129,6 @@ extension SlackControllerTest {
     var files: [UUID: EventWithDate] = [:]
 
     init(eventWithDates: [EventWithDate] = []) {
-
       for file in eventWithDates {
         files[file.id] = file
       }
@@ -136,14 +136,13 @@ extension SlackControllerTest {
 
     let jsonDecoder = JSONDecoder()
     let jsonEncoder = JSONEncoder()
-    func save(event: some Decodable & Encodable & Equatable & Sendable) -> String{
+    func save(event: some Decodable & Encodable & Equatable & Sendable) -> String {
       let jsonData = try! jsonEncoder.encode(event)
       let eventWithDate = EventWithDate(data: jsonData)
       files[eventWithDate.id] = eventWithDate
 
       return eventWithDate.id.uuidString
     }
-
 
     func delete(fileName: String) {
       if let key = UUID(uuidString: fileName) {
@@ -161,6 +160,7 @@ extension SlackControllerTest {
     func getAllEventFileNames() -> [String] {
       return files.keys.map(\.description)
     }
+
     func deleteAllEventFromDirectory() {
       files.removeAll()
     }
