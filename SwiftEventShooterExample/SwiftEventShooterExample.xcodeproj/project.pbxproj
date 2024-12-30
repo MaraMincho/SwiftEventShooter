@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E8091CB32D19855B000C2C65 /* SwiftErrorArchiver in Frameworks */ = {isa = PBXBuildFile; productRef = E8091CB22D19855B000C2C65 /* SwiftErrorArchiver */; };
+		E83AFB452D22250E001171E1 /* SwiftEventShooter in Frameworks */ = {isa = PBXBuildFile; productRef = E83AFB442D22250E001171E1 /* SwiftEventShooter */; };
+		E83AFB572D22256B001171E1 /* SwiftEventShooter in Frameworks */ = {isa = PBXBuildFile; productRef = E83AFB562D22256B001171E1 /* SwiftEventShooter */; };
+		E83AFB592D2225C4001171E1 /* SwiftEventShooter in Frameworks */ = {isa = PBXBuildFile; productRef = E83AFB582D2225C4001171E1 /* SwiftEventShooter */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,25 +30,25 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		E8091C7E2D1983E4000C2C65 /* SwiftErrorArchiverExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftErrorArchiverExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		E8091C8E2D1983E6000C2C65 /* SwiftErrorArchiverExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftErrorArchiverExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		E8091C982D1983E6000C2C65 /* SwiftErrorArchiverExampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftErrorArchiverExampleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8091C7E2D1983E4000C2C65 /* SwiftEventShooterExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftEventShooterExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8091C8E2D1983E6000C2C65 /* SwiftEventShooterExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftEventShooterExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8091C982D1983E6000C2C65 /* SwiftEventShooterExampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftEventShooterExampleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		E8091C802D1983E4000C2C65 /* SwiftErrorArchiverExample */ = {
+		E8091C802D1983E4000C2C65 /* SwiftEventShooterExample */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = SwiftErrorArchiverExample;
+			path = SwiftEventShooterExample;
 			sourceTree = "<group>";
 		};
-		E8091C912D1983E6000C2C65 /* SwiftErrorArchiverExampleTests */ = {
+		E8091C912D1983E6000C2C65 /* SwiftEventShooterTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = SwiftErrorArchiverExampleTests;
+			path = SwiftEventShooterTests;
 			sourceTree = "<group>";
 		};
-		E8091C9B2D1983E6000C2C65 /* SwiftErrorArchiverExampleUITests */ = {
+		E8091C9B2D1983E6000C2C65 /* SwiftEventShooterUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = SwiftErrorArchiverExampleUITests;
+			path = SwiftEventShooterUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -56,7 +58,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E8091CB32D19855B000C2C65 /* SwiftErrorArchiver in Frameworks */,
+				E83AFB572D22256B001171E1 /* SwiftEventShooter in Frameworks */,
+				E83AFB452D22250E001171E1 /* SwiftEventShooter in Frameworks */,
+				E83AFB592D2225C4001171E1 /* SwiftEventShooter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,9 +84,9 @@
 		E8091C752D1983E4000C2C65 = {
 			isa = PBXGroup;
 			children = (
-				E8091C802D1983E4000C2C65 /* SwiftErrorArchiverExample */,
-				E8091C912D1983E6000C2C65 /* SwiftErrorArchiverExampleTests */,
-				E8091C9B2D1983E6000C2C65 /* SwiftErrorArchiverExampleUITests */,
+				E8091C802D1983E4000C2C65 /* SwiftEventShooterExample */,
+				E8091C912D1983E6000C2C65 /* SwiftEventShooterTests */,
+				E8091C9B2D1983E6000C2C65 /* SwiftEventShooterUITests */,
 				E8091C7F2D1983E4000C2C65 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,9 +94,9 @@
 		E8091C7F2D1983E4000C2C65 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E8091C7E2D1983E4000C2C65 /* SwiftErrorArchiverExample.app */,
-				E8091C8E2D1983E6000C2C65 /* SwiftErrorArchiverExampleTests.xctest */,
-				E8091C982D1983E6000C2C65 /* SwiftErrorArchiverExampleUITests.xctest */,
+				E8091C7E2D1983E4000C2C65 /* SwiftEventShooterExample.app */,
+				E8091C8E2D1983E6000C2C65 /* SwiftEventShooterExampleTests.xctest */,
+				E8091C982D1983E6000C2C65 /* SwiftEventShooterExampleUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -100,9 +104,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E8091C7D2D1983E4000C2C65 /* SwiftErrorArchiverExample */ = {
+		E8091C7D2D1983E4000C2C65 /* SwiftEventShooterExample */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E8091CA22D1983E6000C2C65 /* Build configuration list for PBXNativeTarget "SwiftErrorArchiverExample" */;
+			buildConfigurationList = E8091CA22D1983E6000C2C65 /* Build configuration list for PBXNativeTarget "SwiftEventShooterExample" */;
 			buildPhases = (
 				E8091C7A2D1983E4000C2C65 /* Sources */,
 				E8091C7B2D1983E4000C2C65 /* Frameworks */,
@@ -113,19 +117,21 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				E8091C802D1983E4000C2C65 /* SwiftErrorArchiverExample */,
+				E8091C802D1983E4000C2C65 /* SwiftEventShooterExample */,
 			);
-			name = SwiftErrorArchiverExample;
+			name = SwiftEventShooterExample;
 			packageProductDependencies = (
-				E8091CB22D19855B000C2C65 /* SwiftErrorArchiver */,
+				E83AFB442D22250E001171E1 /* SwiftEventShooter */,
+				E83AFB562D22256B001171E1 /* SwiftEventShooter */,
+				E83AFB582D2225C4001171E1 /* SwiftEventShooter */,
 			);
 			productName = SwiftErrorArchiverExample;
-			productReference = E8091C7E2D1983E4000C2C65 /* SwiftErrorArchiverExample.app */;
+			productReference = E8091C7E2D1983E4000C2C65 /* SwiftEventShooterExample.app */;
 			productType = "com.apple.product-type.application";
 		};
-		E8091C8D2D1983E6000C2C65 /* SwiftErrorArchiverExampleTests */ = {
+		E8091C8D2D1983E6000C2C65 /* SwiftEventShooterExampleTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E8091CA52D1983E6000C2C65 /* Build configuration list for PBXNativeTarget "SwiftErrorArchiverExampleTests" */;
+			buildConfigurationList = E8091CA52D1983E6000C2C65 /* Build configuration list for PBXNativeTarget "SwiftEventShooterExampleTests" */;
 			buildPhases = (
 				E8091C8A2D1983E6000C2C65 /* Sources */,
 				E8091C8B2D1983E6000C2C65 /* Frameworks */,
@@ -137,18 +143,18 @@
 				E8091C902D1983E6000C2C65 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				E8091C912D1983E6000C2C65 /* SwiftErrorArchiverExampleTests */,
+				E8091C912D1983E6000C2C65 /* SwiftEventShooterTests */,
 			);
-			name = SwiftErrorArchiverExampleTests;
+			name = SwiftEventShooterExampleTests;
 			packageProductDependencies = (
 			);
 			productName = SwiftErrorArchiverExampleTests;
-			productReference = E8091C8E2D1983E6000C2C65 /* SwiftErrorArchiverExampleTests.xctest */;
+			productReference = E8091C8E2D1983E6000C2C65 /* SwiftEventShooterExampleTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		E8091C972D1983E6000C2C65 /* SwiftErrorArchiverExampleUITests */ = {
+		E8091C972D1983E6000C2C65 /* SwiftEventShooterExampleUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E8091CA82D1983E6000C2C65 /* Build configuration list for PBXNativeTarget "SwiftErrorArchiverExampleUITests" */;
+			buildConfigurationList = E8091CA82D1983E6000C2C65 /* Build configuration list for PBXNativeTarget "SwiftEventShooterExampleUITests" */;
 			buildPhases = (
 				E8091C942D1983E6000C2C65 /* Sources */,
 				E8091C952D1983E6000C2C65 /* Frameworks */,
@@ -160,13 +166,13 @@
 				E8091C9A2D1983E6000C2C65 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				E8091C9B2D1983E6000C2C65 /* SwiftErrorArchiverExampleUITests */,
+				E8091C9B2D1983E6000C2C65 /* SwiftEventShooterUITests */,
 			);
-			name = SwiftErrorArchiverExampleUITests;
+			name = SwiftEventShooterExampleUITests;
 			packageProductDependencies = (
 			);
 			productName = SwiftErrorArchiverExampleUITests;
-			productReference = E8091C982D1983E6000C2C65 /* SwiftErrorArchiverExampleUITests.xctest */;
+			productReference = E8091C982D1983E6000C2C65 /* SwiftEventShooterExampleUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -192,7 +198,7 @@
 					};
 				};
 			};
-			buildConfigurationList = E8091C792D1983E4000C2C65 /* Build configuration list for PBXProject "SwiftErrorArchiverExample" */;
+			buildConfigurationList = E8091C792D1983E4000C2C65 /* Build configuration list for PBXProject "SwiftEventShooterExample" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -202,16 +208,16 @@
 			mainGroup = E8091C752D1983E4000C2C65;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				E8091CB12D19855B000C2C65 /* XCLocalSwiftPackageReference "../SwiftErrorArchiver" */,
+				E83AFB552D22256B001171E1 /* XCLocalSwiftPackageReference "../SwiftEventShooter" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E8091C7F2D1983E4000C2C65 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E8091C7D2D1983E4000C2C65 /* SwiftErrorArchiverExample */,
-				E8091C8D2D1983E6000C2C65 /* SwiftErrorArchiverExampleTests */,
-				E8091C972D1983E6000C2C65 /* SwiftErrorArchiverExampleUITests */,
+				E8091C7D2D1983E4000C2C65 /* SwiftEventShooterExample */,
+				E8091C8D2D1983E6000C2C65 /* SwiftEventShooterExampleTests */,
+				E8091C972D1983E6000C2C65 /* SwiftEventShooterExampleUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -267,12 +273,12 @@
 /* Begin PBXTargetDependency section */
 		E8091C902D1983E6000C2C65 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E8091C7D2D1983E4000C2C65 /* SwiftErrorArchiverExample */;
+			target = E8091C7D2D1983E4000C2C65 /* SwiftEventShooterExample */;
 			targetProxy = E8091C8F2D1983E6000C2C65 /* PBXContainerItemProxy */;
 		};
 		E8091C9A2D1983E6000C2C65 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E8091C7D2D1983E4000C2C65 /* SwiftErrorArchiverExample */;
+			target = E8091C7D2D1983E4000C2C65 /* SwiftEventShooterExample */;
 			targetProxy = E8091C992D1983E6000C2C65 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -404,7 +410,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"SwiftErrorArchiverExample/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"SwiftEventShooterExample/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -432,7 +438,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"SwiftErrorArchiverExample/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"SwiftEventShooterExample/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -467,7 +473,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwiftErrorArchiverExample.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SwiftErrorArchiverExample";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwiftEventShooterExample.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SwiftEventShooterExample";
 			};
 			name = Debug;
 		};
@@ -485,7 +491,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwiftErrorArchiverExample.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SwiftErrorArchiverExample";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwiftEventShooterExample.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SwiftEventShooterExample";
 			};
 			name = Release;
 		};
@@ -524,7 +530,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E8091C792D1983E4000C2C65 /* Build configuration list for PBXProject "SwiftErrorArchiverExample" */ = {
+		E8091C792D1983E4000C2C65 /* Build configuration list for PBXProject "SwiftEventShooterExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E8091CA02D1983E6000C2C65 /* Debug */,
@@ -533,7 +539,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E8091CA22D1983E6000C2C65 /* Build configuration list for PBXNativeTarget "SwiftErrorArchiverExample" */ = {
+		E8091CA22D1983E6000C2C65 /* Build configuration list for PBXNativeTarget "SwiftEventShooterExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E8091CA32D1983E6000C2C65 /* Debug */,
@@ -542,7 +548,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E8091CA52D1983E6000C2C65 /* Build configuration list for PBXNativeTarget "SwiftErrorArchiverExampleTests" */ = {
+		E8091CA52D1983E6000C2C65 /* Build configuration list for PBXNativeTarget "SwiftEventShooterExampleTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E8091CA62D1983E6000C2C65 /* Debug */,
@@ -551,7 +557,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E8091CA82D1983E6000C2C65 /* Build configuration list for PBXNativeTarget "SwiftErrorArchiverExampleUITests" */ = {
+		E8091CA82D1983E6000C2C65 /* Build configuration list for PBXNativeTarget "SwiftEventShooterExampleUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E8091CA92D1983E6000C2C65 /* Debug */,
@@ -563,16 +569,24 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		E8091CB12D19855B000C2C65 /* XCLocalSwiftPackageReference "../SwiftErrorArchiver" */ = {
+		E83AFB552D22256B001171E1 /* XCLocalSwiftPackageReference "../SwiftEventShooter" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../SwiftErrorArchiver;
+			relativePath = ../SwiftEventShooter;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		E8091CB22D19855B000C2C65 /* SwiftErrorArchiver */ = {
+		E83AFB442D22250E001171E1 /* SwiftEventShooter */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = SwiftErrorArchiver;
+			productName = SwiftEventShooter;
+		};
+		E83AFB562D22256B001171E1 /* SwiftEventShooter */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SwiftEventShooter;
+		};
+		E83AFB582D2225C4001171E1 /* SwiftEventShooter */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SwiftEventShooter;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

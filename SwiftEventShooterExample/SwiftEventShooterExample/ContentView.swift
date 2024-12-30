@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import SwiftErrorArchiver
+import SwiftEventShooter
 
 struct ContentView: View {
   // Type the your discord url String
