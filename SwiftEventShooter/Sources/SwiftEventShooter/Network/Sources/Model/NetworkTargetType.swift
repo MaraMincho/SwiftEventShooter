@@ -8,15 +8,20 @@ import Foundation
 
 // MARK: - NetworkTargetType
 
-public protocol NetworkTargetType {
+public protocol NetworkTargetType: Sendable {
   var baseURL: String { get }
   var path: String? { get }
   var method: HTTPMethod { get }
   var body: Encodable? { get }
   var headers: [String: String] { get }
+  init(baseURL: String, path: String?, method: HTTPMethod, body: (any Encodable)?, headers: [String: String]) 
 }
 
 extension NetworkTargetType {
+  func setBody(_ body: any Encodable) -> Self {
+    return .init(baseURL: baseURL, path: path, method: method, body: body, headers: headers)
+  }
+
   private var currentURL: URL? {
     let urlComponents = [baseURL, path]
     let urlString = urlComponents.compactMap { $0 }.joined(separator: "/")

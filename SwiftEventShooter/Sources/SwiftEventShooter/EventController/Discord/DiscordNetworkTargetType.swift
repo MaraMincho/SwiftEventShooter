@@ -14,7 +14,7 @@ public struct DiscordNetworkTargetType: NetworkTargetType, @unchecked Sendable {
   public let body: (any Encodable)?
   public let headers: [String: String]
 
-  init(baseURL: String, path: String? = nil, method: HTTPMethod, body: (any Encodable)? = nil, headers: [String: String]) {
+  public init(baseURL: String, path: String? = nil, method: HTTPMethod, body: (any Encodable)? = nil, headers: [String: String]) {
     self.baseURL = baseURL
     self.path = path
     self.method = method
@@ -32,7 +32,4 @@ public struct DiscordNetworkTargetType: NetworkTargetType, @unchecked Sendable {
     ]
   }
 
-  func setBody(_ body: any Encodable) -> Self {
-    return .init(baseURL: baseURL, path: path, method: method, body: body, headers: headers)
-  }
 }

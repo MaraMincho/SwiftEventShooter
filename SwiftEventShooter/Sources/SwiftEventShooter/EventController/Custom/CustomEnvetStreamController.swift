@@ -1,35 +1,35 @@
 //
-//  DiscordEventStreamController.swift
-//  DiscordEventStreamController
+//  File.swift
+//  SwiftEventShooter
 //
-//  Created by MaraMincho on 12/20/24.
+//  Created by MaraMincho on 1/13/25.
 //
 
 import Foundation
 
-// MARK: - DiscordEventStreamController
 
-public struct DiscordEventStreamController: EventStreamControllerInterface, Sendable {
+public struct CustomEventStreamController<TargetType: NetworkTargetType>: EventStreamControllerInterface, Sendable {
   private let nowNetworkingStorageController: EventStorageControllerInterface?
   private let networkingFailedStorageController: EventStorageControllerInterface?
-  private let provider: SDKNetworkProvider<DiscordNetworkTargetType>
-  private let discordNetworkTarget: DiscordNetworkTargetType
+  private let provider: SDKNetworkProvider<TargetType>
+  private let customNetworkTarget: TargetType
   private let pendingStreamManager: PendingStreamManagerInterface
   private let networkMonitor: NetworkMonitorInterface
   private let timer: TimerManager
   public init(
-    provider: SDKNetworkProvider<DiscordNetworkTargetType> = .init(),
-    discordNetworkURL: String,
+    targetType: TargetType,
+    provider: SDKNetworkProvider<TargetType> = .init(),
+    networkURLString: String,
     nowNetworkingStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .discord(.nowNetworking)),
     networkingFailedStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .discord(.failedNetworking)),
     timeInterval: Double = 60,
-    pendingStreamManager: PendingStreamManagerInterface = CountedBasedPendingStreamManager(capacity: 4),
+    pendingStreamManager: PendingStreamManagerInterface = CountedBasedPendingStreamManager(capacity: 2),
     networkMonitor: NetworkMonitorInterface = NetworkMonitor()
   ) {
     self.provider = provider
     self.nowNetworkingStorageController = nowNetworkingStorageController
     self.networkingFailedStorageController = networkingFailedStorageController
-    discordNetworkTarget = .init(webHookURLString: discordNetworkURL)
+    self.customNetworkTarget = targetType
     self.pendingStreamManager = pendingStreamManager
     self.networkMonitor = networkMonitor
     timer = .init(interval: timeInterval)
@@ -49,7 +49,7 @@ public struct DiscordEventStreamController: EventStreamControllerInterface, Send
     var fileName: String? = nil
     do {
       fileName = try await nowNetworkingStorageController?.save(event: event)
-      try await sendDiscordLog(currentString)
+      try await provider.request(customNetworkTarget.setBody(event))
       SwiftEventShooterLogger.debug(message: "Network worked correctly")
     } catch {
       await failedNetworkingRoutine(event: event)
@@ -125,7 +125,7 @@ public struct DiscordEventStreamController: EventStreamControllerInterface, Send
             if
               let prevEvent = await networkingFailedStorageController.getEvent(from: prevEventName),
               let currentMessage = String(data: prevEvent.data, encoding: .utf8) {
-              try await sendDiscordLog(currentMessage)
+              try await provider.request(customNetworkTarget.setBody(currentMessage))
             }
             await networkingFailedStorageController.delete(fileName: prevEventName)
           } catch {
@@ -152,54 +152,5 @@ public struct DiscordEventStreamController: EventStreamControllerInterface, Send
         await sendPendingEvents()
       }
     }
-  }
-
-  private func sendDiscordLog(_ content: String) async throws {
-    for currentContent in content.splitByLength(Constants.discordTextLength) {
-      _ = try await provider.request(discordNetworkTarget.setBody(DiscordMessage(content: currentContent)))
-    }
-  }
-
-  enum Constants {
-    static let discordTextLength: Int = 1900
-  }
-
-  private struct DiscordMessage<Item: Encodable>: Encodable {
-    let content: Item
-    init(content: Item) {
-      self.content = content
-    }
-  }
-}
-
-private extension String {
-  func splitByLength(_ length: Int) -> [String] {
-    var result: [String] = []
-    var currentIndex = startIndex
-
-    while currentIndex < endIndex {
-      let nextIndex = index(currentIndex, offsetBy: length, limitedBy: endIndex) ?? endIndex
-      result.append(Swift.String(self[currentIndex ..< nextIndex]))
-      currentIndex = nextIndex
-    }
-
-    return result
-  }
-}
-
-private extension Data {
-  func splitByLength(_ length: Int) -> [Data] {
-    guard length > 0 else { return [] } // 유효성 검사: 길이는 0보다 커야 함
-    var result: [Data] = []
-    var offset = 0
-
-    while offset < count {
-      let chunkEnd = Swift.min(offset + length, count)
-      let chunk = self[offset ..< chunkEnd]
-      result.append(chunk)
-      offset = chunkEnd
-    }
-
-    return result
   }
 }
