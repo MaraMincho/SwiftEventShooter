@@ -114,13 +114,15 @@ public struct DiscordEventStreamController: EventStreamControllerInterface, Send
       return
     }
 
-    pendingStreamManager.startTransmission()
+
     let currentTransmissionCount = pendingStreamManager.getCurrentMaximumTransmissionUnit
     // 더이상 전달할 내용이 없으면 return
     let prevEventNames = await networkingFailedStorageController.getAllEventFileNames()
     if prevEventNames.isEmpty {
       return
     }
+
+    pendingStreamManager.startTransmission()
 
     await withTaskGroup(of: Void.self) { group in
       let prevEventNames = prevEventNames.sorted().prefix(currentTransmissionCount)
