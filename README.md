@@ -20,6 +20,8 @@ slackSDK.sendMessage(event: TestEventObject(message: "Hello slack"))
 slackSDK.sendMessage(event: "Hello world")
 ```
 
+<br/><br/>
+
 ### Discord
 
 To send Discord message, you must know Discord webhookURL. Then, SDK send the event to Discord.
@@ -30,6 +32,24 @@ let discordSDK = SwiftEventShooterSDK(type: .discord(.init(discordNetworkURL: "D
 discordSDK.sendMessage(event: TestEventObject(message: "Hello Discord"))
 discordSDK.sendMessage(event: "Hello world")
 ```
+
+<br/><br/>
+
+### Custom server
+
+To send server event message, you must know server event url. Then, SDK send the event to server.
+
+```swift
+let serverEventSDK = SwiftEventShooterSDK(
+    targetType: CustomEventStreamControllerTargetType(...),
+    type: .discord(.init(discordNetworkURL: "DiscordWebHookURL"))
+)
+
+serverEventSDK.sendMessage(event: TestEventObject(message: "Hello Discord"))
+serverEventSDK.sendMessage(event: "Hello world")
+```
+
+<br/><br/>
 
 ### Configure
 

@@ -1,35 +1,35 @@
 //
-//  SlackEventStreamController.swift
-//  SlackEventStreamController
+//  File.swift
+//  SwiftEventShooter
 //
-//  Created by MaraMincho on 12/28/24.
+//  Created by MaraMincho on 1/13/25.
 //
 
 import Foundation
 
-// MARK: - SlackEventStreamController
 
-public struct SlackEventStreamController: EventStreamControllerInterface, Sendable {
+public struct CustomEventStreamController<TargetType: NetworkTargetType>: EventStreamControllerInterface, Sendable {
   private let nowNetworkingStorageController: EventStorageControllerInterface?
   private let networkingFailedStorageController: EventStorageControllerInterface?
-  private let provider: SDKNetworkProvider<SlackNetworkTargetType>
-  private let slackNetworkTarget: SlackNetworkTargetType
+  private let provider: SDKNetworkProvider<TargetType>
+  private let customNetworkTarget: TargetType
   private let pendingStreamManager: PendingStreamManagerInterface
   private let networkMonitor: NetworkMonitorInterface
   private let timer: TimerManager
   public init(
-    provider: SDKNetworkProvider<SlackNetworkTargetType> = .init(),
-    slackWebHookURL: String,
-    nowNetworkingStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .slack(.nowNetworking)),
-    networkingFailedStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .slack(.failedNetworking)),
+    targetType: TargetType,
+    provider: SDKNetworkProvider<TargetType> = .init(),
+    networkURLString: String,
+    nowNetworkingStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .discord(.nowNetworking)),
+    networkingFailedStorageController: EventStorageControllerInterface? = EventCacheDirectoryController(storageControllerType: .discord(.failedNetworking)),
     timeInterval: Double = 60,
-    pendingStreamManager: PendingStreamManagerInterface = CountedBasedPendingStreamManager(capacity: 4),
+    pendingStreamManager: PendingStreamManagerInterface = CountedBasedPendingStreamManager(capacity: 2),
     networkMonitor: NetworkMonitorInterface = NetworkMonitor()
   ) {
     self.provider = provider
     self.nowNetworkingStorageController = nowNetworkingStorageController
     self.networkingFailedStorageController = networkingFailedStorageController
-    slackNetworkTarget = .init(webHookURLString: slackWebHookURL)
+    self.customNetworkTarget = targetType
     self.pendingStreamManager = pendingStreamManager
     self.networkMonitor = networkMonitor
     timer = .init(interval: timeInterval)
@@ -40,16 +40,10 @@ public struct SlackEventStreamController: EventStreamControllerInterface, Sendab
       SwiftEventShooterLogger.debug(message: "Network is not available")
       return
     }
-    guard let data = try? JSONEncoder.encode(event),
-          let currentString = String(data: data, encoding: .utf8)
-    else {
-      SwiftEventShooterLogger.error(message: "Json decoding error occurred", dumpObject: event)
-      return
-    }
     var fileName: String? = nil
     do {
       fileName = try await nowNetworkingStorageController?.save(event: event)
-      try await sendSlackLog(currentString)
+      try await provider.request(customNetworkTarget.setBody(event))
       SwiftEventShooterLogger.debug(message: "Network worked correctly")
     } catch {
       await failedNetworkingRoutine(event: event)
@@ -131,7 +125,7 @@ public struct SlackEventStreamController: EventStreamControllerInterface, Sendab
             if
               let prevEvent = await networkingFailedStorageController.getEvent(from: prevEventName),
               let currentMessage = String(data: prevEvent.data, encoding: .utf8) {
-              try await sendSlackLog(currentMessage)
+              try await provider.request(customNetworkTarget.setBody(currentMessage))
             }
             await networkingFailedStorageController.delete(fileName: prevEventName)
           } catch {
@@ -159,54 +153,5 @@ public struct SlackEventStreamController: EventStreamControllerInterface, Sendab
         await sendPendingEvents()
       }
     }
-  }
-
-  private func sendSlackLog(_ content: String) async throws {
-    for currentContent in content.splitByLength(Constants.discordTextLength) {
-      _ = try await provider.request(slackNetworkTarget.setBody(Slack(text: currentContent)))
-    }
-  }
-
-  enum Constants {
-    static let discordTextLength: Int = 1900
-  }
-
-  struct Slack<Item: Encodable>: Encodable {
-    let text: Item
-    init(text: Item) {
-      self.text = text
-    }
-  }
-}
-
-private extension String {
-  func splitByLength(_ length: Int) -> [String] {
-    var result: [String] = []
-    var currentIndex = startIndex
-
-    while currentIndex < endIndex {
-      let nextIndex = index(currentIndex, offsetBy: length, limitedBy: endIndex) ?? endIndex
-      result.append(Swift.String(self[currentIndex ..< nextIndex]))
-      currentIndex = nextIndex
-    }
-
-    return result
-  }
-}
-
-private extension Data {
-  func splitByLength(_ length: Int) -> [Data] {
-    guard length > 0 else { return [] } // 유효성 검사: 길이는 0보다 커야 함
-    var result: [Data] = []
-    var offset = 0
-
-    while offset < count {
-      let chunkEnd = Swift.min(offset + length, count)
-      let chunk = self[offset ..< chunkEnd]
-      result.append(chunk)
-      offset = chunkEnd
-    }
-
-    return result
   }
 }

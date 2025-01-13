@@ -114,11 +114,18 @@ public struct DiscordEventStreamController: EventStreamControllerInterface, Send
       return
     }
 
-    pendingStreamManager.startTransmission()
+
     let currentTransmissionCount = pendingStreamManager.getCurrentMaximumTransmissionUnit
+    // 더이상 전달할 내용이 없으면 return
+    let prevEventNames = await networkingFailedStorageController.getAllEventFileNames()
+    if prevEventNames.isEmpty {
+      return
+    }
+
+    pendingStreamManager.startTransmission()
 
     await withTaskGroup(of: Void.self) { group in
-      let prevEventNames = await networkingFailedStorageController.getAllEventFileNames().sorted().prefix(currentTransmissionCount)
+      let prevEventNames = prevEventNames.sorted().prefix(currentTransmissionCount)
       for prevEventName in prevEventNames {
         group.addTask {
           do {
@@ -135,6 +142,7 @@ public struct DiscordEventStreamController: EventStreamControllerInterface, Send
       }
     }
     pendingStreamManager.finishTransmission()
+    await sendPendingEvents()
   }
 
   public func configure() {
@@ -147,7 +155,7 @@ public struct DiscordEventStreamController: EventStreamControllerInterface, Send
   }
 
   private func timerAction() {
-    Task {
+    Task(priority: .low) {
       if pendingStreamManager.isFinishPrevTransmission {
         await sendPendingEvents()
       }
@@ -164,7 +172,7 @@ public struct DiscordEventStreamController: EventStreamControllerInterface, Send
     static let discordTextLength: Int = 1900
   }
 
-  struct DiscordMessage<Item: Encodable>: Encodable {
+  private struct DiscordMessage<Item: Encodable>: Encodable {
     let content: Item
     init(content: Item) {
       self.content = content

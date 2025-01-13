@@ -105,8 +105,8 @@ final class SlackControllerTest: XCTestCase {
     await fulfillment(of: [expectation], timeout: 45)
     let nowNetworkingFileNames = await storageController.getAllEventFileNames()
     let failedNetworkingFileNames = await failedStorageController.getAllEventFileNames()
-    XCTAssertEqual([], failedNetworkingFileNames)
     XCTAssertEqual([], nowNetworkingFileNames)
+    XCTAssertEqual([], failedNetworkingFileNames)
   }
 }
 
