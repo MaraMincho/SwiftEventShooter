@@ -40,8 +40,7 @@ public struct CustomEventStreamController<TargetType: NetworkTargetType>: EventS
       SwiftEventShooterLogger.debug(message: "Network is not available")
       return
     }
-    guard let data = try? JSONEncoder.encode(event),
-          let currentString = String(data: data, encoding: .utf8)
+    guard let data = try? JSONEncoder.encode(event)
     else {
       SwiftEventShooterLogger.error(message: "Json decoding error occurred", dumpObject: event)
       return
