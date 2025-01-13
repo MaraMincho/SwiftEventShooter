@@ -116,9 +116,14 @@ public struct SlackEventStreamController: EventStreamControllerInterface, Sendab
 
     pendingStreamManager.startTransmission()
     let currentTransmissionCount = pendingStreamManager.getCurrentMaximumTransmissionUnit
+    // 더이상 전달할 내용이 없으면 return
+    let prevEventNames = await networkingFailedStorageController.getAllEventFileNames()
+    if prevEventNames.isEmpty {
+      return
+    }
 
     await withTaskGroup(of: Void.self) { group in
-      let prevEventNames = await networkingFailedStorageController.getAllEventFileNames().sorted().prefix(currentTransmissionCount)
+      let prevEventNames = prevEventNames.sorted().prefix(currentTransmissionCount)
       for prevEventName in prevEventNames {
         group.addTask {
           do {
