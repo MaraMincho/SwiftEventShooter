@@ -40,11 +40,6 @@ public struct CustomEventStreamController<TargetType: NetworkTargetType>: EventS
       SwiftEventShooterLogger.debug(message: "Network is not available")
       return
     }
-    guard let data = try? JSONEncoder.encode(event)
-    else {
-      SwiftEventShooterLogger.error(message: "Json decoding error occurred", dumpObject: event)
-      return
-    }
     var fileName: String? = nil
     do {
       fileName = try await nowNetworkingStorageController?.save(event: event)
@@ -134,6 +129,7 @@ public struct CustomEventStreamController<TargetType: NetworkTargetType>: EventS
       }
     }
     pendingStreamManager.finishTransmission()
+    await sendPendingEvents()
   }
 
   public func configure() {

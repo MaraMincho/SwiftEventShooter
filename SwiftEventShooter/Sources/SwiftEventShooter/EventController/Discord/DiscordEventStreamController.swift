@@ -135,6 +135,7 @@ public struct DiscordEventStreamController: EventStreamControllerInterface, Send
       }
     }
     pendingStreamManager.finishTransmission()
+    await sendPendingEvents()
   }
 
   public func configure() {

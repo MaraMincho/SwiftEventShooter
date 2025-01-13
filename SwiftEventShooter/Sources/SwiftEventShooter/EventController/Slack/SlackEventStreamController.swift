@@ -135,6 +135,7 @@ public struct SlackEventStreamController: EventStreamControllerInterface, Sendab
       }
     }
     pendingStreamManager.finishTransmission()
+    await sendPendingEvents()
   }
 
   public func configure() {
